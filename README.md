@@ -11,8 +11,7 @@ Installation
 
 2. Click `Install`.
 
-3. Edit your Atom config file `config.cson` usually found in your home directory at `~/.atom/config.cson`.<br>
-   Get your [api key](https://wakatime.com/#apikey) and paste it in the `wakatime.apikey` config setting.
+3. Click `Settings`. Enter your [api key](https://wakatime.com/#apikey) from [https://wakatime.com/#apikey](https://wakatime.com/#apikey).
 
 4. Use Atom like you normally do and your time will automatically be tracked for you.
 
