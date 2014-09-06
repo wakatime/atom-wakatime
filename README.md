@@ -1,0 +1,25 @@
+atom-wakatime
+=============
+
+Automatic time tracking for GitHub's Atom text editor.
+
+
+Installation
+------------
+
+1. Navigate to `Atom` -> `Preferences...` -> `Packages` and search for `wakatime`.
+
+2. Click `Install`.
+
+3. Edit your Atom config file `config.cson` usually found in your home directory at `~/.atom/config.cson`.<br>
+   Get your [api key](https://wakatime.com/#apikey) and paste it in the `wakatime.apikey` config setting.
+
+4. Use Atom like you normally do and your time will automatically be tracked for you.
+
+5. Visit https://wakatime.com to see your logged time.
+
+
+Screen Shots
+------------
+
+![Project Overview](https://wakatime.com/static/img/ScreenShots/Screen Shot 2013-10-26 at 5.04.01 PM.png)

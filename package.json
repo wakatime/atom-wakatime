@@ -1,0 +1,16 @@
+{
+  "name": "wakatime",
+  "version": "0.0.0",
+  "description": "Automatic time tracking for GitHub's Atom text editor",
+  "license": "BSD",
+  "repository": "https://github.com/wakatime/atom-wakatime",
+  "author": "WakaTime <support@wakatime.com>",
+  "main": "./lib/wakatime",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "jquery": "2.1.1",
+    "highlight.js": "8.2.0"
+  }
+}
