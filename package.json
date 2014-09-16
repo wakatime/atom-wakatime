@@ -10,7 +10,6 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "jquery": "2.1.1",
     "highlight.js": "8.2.0"
   }
 }

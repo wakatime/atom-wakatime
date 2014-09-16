@@ -1,11 +1,11 @@
 
-highlight = require 'highlight.js'
-$ = require 'jquery'
+highlight = undefined
 
 module.exports =
 
   activate: (state) ->
     window.VERSION = atom.packages.getLoadedPackage('wakatime').metadata.version
+    highlight = require 'highlight.js'
     setupConfig()
     setupEventHandlers()
     console.log 'WakaTime v'+VERSION+' loaded.'
@@ -57,22 +57,19 @@ sendHeartbeat = (file, time, isWrite) ->
     project = (if atom.project.path? then atom.project.path.split(/[\\\/]/).pop() else undefined)
     branch =  (if atom.project.repo and atom.project.repo.branch then atom.project.repo.branch.split('/').pop() else undefined)
     lines = (if file.cachedContents then file.cachedContents.split("\n").length else undefined)
-    $.ajax
-        type: 'POST'
-        url: 'https://wakatime.com/api/v1/actions'
-        contentType: 'application/json'
-        dataType: 'json'
-        data: JSON.stringify(
-            time: (time / 1000.0).toFixed(2)
-            file: file.path
-            project: project
-            language: language
-            is_write: (if isWrite then true else false)
-            lines: lines
-            plugin: 'atom-wakatime/' + VERSION
-        )
-        headers:
-            'Authorization': 'Basic ' + btoa(apikey)
+    request = new XMLHttpRequest()
+    request.open('POST', 'https://wakatime.com/api/v1/actions', true)
+    request.setRequestHeader('Authorization', 'Basic ' + btoa(apikey))
+    request.setRequestHeader('Content-Type', 'application/json')
+    request.send(JSON.stringify(
+        time: (time / 1000.0).toFixed(2)
+        file: file.path
+        project: project
+        language: language
+        is_write: (if isWrite then true else false)
+        lines: lines
+        plugin: 'atom-wakatime/' + VERSION
+    ))
     lastAction = time
     lastFile = file.path
     
