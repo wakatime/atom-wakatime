@@ -50,9 +50,12 @@ sendHeartbeat = (file, time, isWrite) ->
     ext = file.path.split('.').pop()
     language = ext if languageMap[ext]?
     unless language?
-        language = ext if highlight.getLanguage(ext)? and languageMap[ext]?
-        unless language?
-            language = highlight.highlightAuto(file.cachedContents).language if file.cachedContents
+        try
+            language = ext if highlight.getLanguage(ext)? and languageMap[ext]?
+            unless language?
+                language = highlight.highlightAuto(file.cachedContents).language if file.cachedContents
+        catch e
+            language = ext if languageMap[ext]?
     language = languageMap[language] if language? and languageMap[language]
     project = (if atom.project.path? then atom.project.path.split(/[\\\/]/).pop() else undefined)
     branch =  (if atom.project.repo and atom.project.repo.branch then atom.project.repo.branch.split('/').pop() else undefined)
@@ -177,6 +180,8 @@ languageMap =
     "patch": "Diff"
     "perl": "Perl"
     "php": "PHP"
+    "phtml": "HTML"
+    "pl": "Perl"
     "profile": "Python profile"
     "protobuf": "Protocol Buffers"
     "puppet": "Puppet"

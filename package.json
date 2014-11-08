@@ -10,6 +10,6 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "highlight.js": "8.2.0"
+    "highlight.js": "8.3.0"
   }
 }
