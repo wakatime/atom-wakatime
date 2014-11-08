@@ -11,7 +11,7 @@ Installation
 
 2. Click `Install`.
 
-3. Click `Settings`. Enter your [api key](https://wakatime.com/#apikey) from [https://wakatime.com/#apikey](https://wakatime.com/#apikey).
+3. Click `Settings`. Enter your [api key](https://wakatime.com/settings#apikey) from https://wakatime.com/settings#apikey.
 
 4. Use Atom like you normally do and your time will automatically be tracked for you.
 
@@ -21,4 +21,4 @@ Installation
 Screen Shots
 ------------
 
-![Project Overview](https://wakatime.com/static/img/ScreenShots/ScreenShot_2014-09-15.png)
+![Project Overview](https://wakatime.com/static/img/ScreenShots/ScreenShot-2014-10-29.png)
