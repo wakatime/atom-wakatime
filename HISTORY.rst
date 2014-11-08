@@ -3,6 +3,12 @@ History
 -------
 
 
+2.0.1 (2014-11-08)
+++++++++++++++++++
+
+- wrap call to external highlight.js library in try catch block
+
+
 2.0.0 (2014-09-16)
 ++++++++++++++++++
 
