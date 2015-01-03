@@ -1,6 +1,6 @@
 {
   "name": "wakatime",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Automatic time tracking",
   "license": "BSD",
   "repository": "https://github.com/wakatime/atom-wakatime",
