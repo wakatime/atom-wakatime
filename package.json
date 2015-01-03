@@ -10,6 +10,6 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "highlight.js": "8.3.0"
+    "highlight.js": "git://github.com/isagalaev/highlight.js.git"
   }
 }
