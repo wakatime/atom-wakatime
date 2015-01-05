@@ -3,6 +3,18 @@ History
 -------
 
 
+2.2.0 (2015-11-05)
+++++++++++++++++++
+
+- use highlight.js v8.4.0 or greater because installing from github causing problems
+
+
+2.1.0 (2015-11-02)
+++++++++++++++++++
+
+- install highlight.js from github repo to use latest dev version
+
+
 2.0.1 (2014-11-08)
 ++++++++++++++++++
 
