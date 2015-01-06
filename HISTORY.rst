@@ -3,7 +3,7 @@ History
 -------
 
 
-2.2.1 (2015-11-06)
+2.2.2 (2015-11-06)
 ++++++++++++++++++
 
 - prevent exception when opening non-text buffer window
