@@ -25,21 +25,22 @@ setupConfig = () ->
 
 setupEventHandlers = () ->
     atom.workspace.eachEditor (editor) =>
-        buffer = editor.getBuffer()
-        buffer.on 'saved', (e) =>
-            file = e.file
-            time = Date.now()
-            sendHeartbeat(file, time, true)
-        buffer.on 'changed', (e) =>
-            item = atom.workspaceView.getActivePaneItem()
-            if item?
-                buffer = item.getBuffer()
-                if buffer? and buffer.file?
-                    file = buffer.file
-                    if file
-                        time = Date.now()
-                        if enoughTimePassed(time) or lastFile isnt file.path
-                            sendHeartbeat(file, time)
+        try
+            buffer = editor.getBuffer()
+            buffer.on 'saved', (e) =>
+                file = e.file
+                time = Date.now()
+                sendHeartbeat(file, time, true)
+            buffer.on 'changed', (e) =>
+                item = atom.workspaceView.getActivePaneItem()
+                if item?
+                    buffer = item.getBuffer()
+                    if buffer? and buffer.file?
+                        file = buffer.file
+                        if file
+                            time = Date.now()
+                            if enoughTimePassed(time) or lastFile isnt file.path
+                                sendHeartbeat(file, time)
 
 sendHeartbeat = (file, time, isWrite) ->
     if file.path is undefined or fileIsIgnored(file.path)
