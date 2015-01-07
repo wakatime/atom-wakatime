@@ -145,7 +145,6 @@ installCLI = (callback) ->
     )
 
 downloadFile = (url, outputFile, callback) ->
-    callback()
     r = request(url)
     out = fs.createWriteStream(outputFile)
     r.pipe(out)
@@ -158,7 +157,6 @@ downloadFile = (url, outputFile, callback) ->
 
 unzip = (file, outputDir, cleanup) ->
     zip = new AdmZip(file)
-    zipEntries = zip.getEntries()
     zip.extractAllTo(outputDir, true)
     if cleanup
         fs.unlink(file)
