@@ -1,14 +1,25 @@
 
-highlight = undefined
+AdmZip = require 'adm-zip'
+fs = require 'fs'
+os = require 'os'
+path = require 'path'
+process = require('child_process');
+request = require 'request'
 
 module.exports =
 
-  activate: (state) ->
-    window.VERSION = atom.packages.getLoadedPackage('wakatime').metadata.version
-    highlight = require 'highlight.js'
-    setupConfig()
-    setupEventHandlers()
-    console.log 'WakaTime v'+VERSION+' loaded.'
+    activate: (state) ->
+        window.VERSION = atom.packages.getLoadedPackage('wakatime').metadata.version
+
+        if not isCLIInstalled()
+            installCLI()
+        isPythonInstalled((installed) ->
+            if not installed
+                installPython()
+        )
+        setupConfig()
+        setupEventHandlers()
+        console.log 'WakaTime v'+VERSION+' loaded.'
     
 lastAction = 0
 lastFile = ''
@@ -33,49 +44,146 @@ setupEventHandlers = () ->
                 sendHeartbeat(file, time, true)
             buffer.on 'changed', (e) =>
                 item = atom.workspaceView.getActivePaneItem()
-                if item?
+                if item? and item
                     buffer = item.getBuffer()
-                    if buffer? and buffer.file?
+                    if buffer? and buffer and buffer.file?
                         file = buffer.file
-                        if file
+                        if file? and file
                             time = Date.now()
                             if enoughTimePassed(time) or lastFile isnt file.path
                                 sendHeartbeat(file, time)
 
+isPythonInstalled = (callback) ->
+    pythonLocation((result) ->
+        callback(result?)
+    )
+
+pythonLocation = (callback, locations) ->
+    if global.cachedPythonLocation?
+        callback(global.cachedPythonLocation)
+    else
+        if not locations?
+            locations = [
+                'pythonw',
+                'python',
+                '/usr/local/bin/python',
+                "/usr/bin/python",
+                '\\python37\\pythonw',
+                '\\python36\\pythonw',
+                '\\python35\\pythonw',
+                '\\python34\\pythonw',
+                '\\python33\\pythonw',
+                '\\python32\\pythonw',
+                '\\python31\\pythonw',
+                '\\python30\\pythonw',
+                '\\python27\\pythonw',
+                '\\python26\\pythonw',
+                '\\python37\\python',
+                '\\python36\\python',
+                '\\python35\\python',
+                '\\python34\\python',
+                '\\python33\\python',
+                '\\python32\\python',
+                '\\python31\\python',
+                '\\python30\\python',
+                '\\python27\\python',
+                '\\python26\\python',
+            ]
+        args = ['--version']
+        if locations.length is 0
+            callback(null)
+            return
+        location = locations[0]
+        process.execFile(location, args, (error, stdout, stderr) ->
+            if not error?
+                global.cachedPythonLocation = location
+                callback(location)
+            else
+                locations.splice(0, 1)
+                pythonLocation(callback, locations)
+        )
+
+installPython = () ->
+    if os.type() is 'Windows_NT'
+        url = 'https://www.python.org/ftp/python/3.4.2/python-3.4.2.msi';
+        if os.arch().indexOf('x64') > -1
+            url = "https://www.python.org/ftp/python/3.4.2/python-3.4.2.amd64.msi";
+        console.log 'Downloading python...'
+        msiFile = __dirname + path.sep + 'python.msi'
+        downloadFile(url, msiFile, ->
+            console.log 'Installing python...'
+            args = ['/i', msiFile, '/norestart', '/qb!']
+            process.execFile('msiexec', args, (error, stdout, stderr) ->
+                if error?
+                    console.warn error
+                    window.alert('Error encountered while installing Python.')
+                else
+                    fs.unlink(msiFile)
+                    console.log 'Finished installing python.'
+            )
+        )
+    else
+        window.alert('WakaTime depends on Python. Install it from https://python.org/downloads then restart Atom.')
+
+isCLIInstalled = () ->
+    return fs.existsSync(cliLocation())
+
+cliLocation = () ->
+    dir = __dirname + path.sep + 'wakatime-master' + path.sep + 'wakatime-cli.py'
+    return dir
+
+installCLI = (callback) ->
+    console.log 'Downloading wakatime-cli...'
+    url = 'https://github.com/wakatime/wakatime/archive/master.zip'
+    zipFile = __dirname + path.sep + 'wakatime-cli.zip'
+    downloadFile(url, zipFile, ->
+        console.log 'Extracting wakatime-cli.zip file...'
+        unzip(zipFile, __dirname, true)
+        console.log 'Finished installing wakatime-cli.'
+        if callback?
+            callback()
+    )
+
+downloadFile = (url, outputFile, callback) ->
+    callback()
+    r = request(url)
+    out = fs.createWriteStream(outputFile)
+    r.pipe(out)
+    r.on('end', ->
+        out.on('finish', ->
+            if callback?
+                callback()
+        )
+    )
+
+unzip = (file, outputDir, cleanup) ->
+    zip = new AdmZip(file)
+    zipEntries = zip.getEntries()
+    zip.extractAllTo(outputDir, true)
+    if cleanup
+        fs.unlink(file)
+    
 sendHeartbeat = (file, time, isWrite) ->
-    if file.path is undefined or fileIsIgnored(file.path)
-        return
-    apikey = atom.config.get("wakatime.apikey")
-    unless apikey
-        return
-    ext = file.path.split('.').pop()
-    language = ext if languageMap[ext]?
-    unless language?
-        try
-            language = ext if highlight.getLanguage(ext)? and languageMap[ext]?
-            unless language?
-                language = highlight.highlightAuto(file.cachedContents).language if file.cachedContents
-        catch e
-            language = ext if languageMap[ext]?
-    language = languageMap[language] if language? and languageMap[language]
-    project = (if atom.project.path? then atom.project.path.split(/[\\\/]/).pop() else undefined)
-    branch =  (if atom.project.repo and atom.project.repo.branch then atom.project.repo.branch.split('/').pop() else undefined)
-    lines = (if file.cachedContents then file.cachedContents.split("\n").length else undefined)
-    request = new XMLHttpRequest()
-    request.open('POST', 'https://wakatime.com/api/v1/actions', true)
-    request.setRequestHeader('Authorization', 'Basic ' + btoa(apikey))
-    request.setRequestHeader('Content-Type', 'application/json')
-    request.send(JSON.stringify(
-        time: (time / 1000.0).toFixed(2)
-        file: file.path
-        project: project
-        language: language
-        is_write: (if isWrite then true else false)
-        lines: lines
-        plugin: 'atom-wakatime/' + VERSION
-    ))
-    lastAction = time
-    lastFile = file.path
+    pythonLocation((python) ->
+        if python?
+            if not file.path? or file.path is undefined or fileIsIgnored(file.path)
+                return
+            apikey = atom.config.get("wakatime.apikey")
+            unless apikey
+                return
+
+            args = [cliLocation(), '--file', file.path, '--plugin', 'atom-wakatime/' + VERSION]
+            if isWrite
+                args.push('--write')
+            process.execFile(python, args, (error, stdout, stderr) ->
+                if error?
+                    console.warn error
+                # else
+                #     console.log(args)
+            )
+            lastAction = time
+            lastFile = file.path
+    )
     
 fileIsIgnored = (file) ->
     patterns = atom.config.get("wakatime.ignore")
@@ -86,138 +194,3 @@ fileIsIgnored = (file) ->
             ignore = true
             break
     return ignore
-
-languageMap =
-    "1c": "1C"
-    "actionscript": "ActionScript"
-    "apache": "Apache Conf"
-    "apacheconf": "Apache Conf"
-    "applescript": "AppleScript"
-    "as": "ActionScript"
-    "asciidoc": "AsciiDoc"
-    "autohotkey": "AutoHotkey"
-    "avrasm": "AVR Assembler"
-    "axapta": "Axapta"
-    "bash": "Bash"
-    "bat": "DOS"
-    "brainfuck": "Brainfuck"
-    "c": "C"
-    "capnp": "Cap'n Proto"
-    "capnproto": "Cap'n Proto"
-    "clj": "Clojure"
-    "clojure": "Clojure"
-    "cmake": "CMake"
-    "cmake.in": "CMake"
-    "cmd": "DOS"
-    "coffee": "CoffeeScript"
-    "coffeescript": "CoffeeScript"
-    "cpp": "C++"
-    "c++": "C++"
-    "cs": "C#"
-    "csharp": "C#"
-    "cson": "CoffeeScript"
-    "css": "CSS"
-    "d": "D"
-    "dart": "Dart"
-    "delphi": "Delphi"
-    "diff": "Diff"
-    "django": "HTML"
-    "dos": "DOS"
-    "dst": "Dust"
-    "dust": "Dust"
-    "elixir": "Elixir"
-    "erl": "Erlang"
-    "erlang-repl": "Erlang"
-    "erlang": "Erlang"
-    "fix": "FIX"
-    "fs": "F#"
-    "fsharp": "F#"
-    "gcode": "G-code"
-    "gherkin": "Gherkin"
-    "glsl": "GLSL"
-    "go": "Go"
-    "golang": "Go"
-    "gradle": "Gradle"
-    "groovy": "Groovy"
-    "h++": "C++"
-    "haml": "Haml"
-    "handlebars": "Handlebars"
-    "haskell": "Haskell"
-    "haxe": "Haxe"
-    "html": "HTML"
-    "http": "HTTP"
-    "iced": "CoffeeScript"
-    "ini": "INI"
-    "java": "Java"
-    "javascript": "JavaScript"
-    "jinja": "HTML"
-    "json": "JSON"
-    "lasso": "Lasso"
-    "less": "LESS"
-    "lisp": "Lisp"
-    "livecodeserver": "LiveCode"
-    "lua": "Lua"
-    "m": "Objective-C"
-    "mm": "Objective-C"
-    "makefile": "Makefile"
-    "markdown": "Markdown"
-    "mathematica": "Mathematica"
-    "matlab": "Matlab"
-    "mel": "MEL"
-    "mizar": "Mizar"
-    "monkey": "Monkey"
-    "nc": "nesC"
-    "nesc": "nesC"
-    "nginx": "Nginx Conf"
-    "nginxconf": "Nginx Conf"
-    "nimrod": "Nimrod"
-    "nix": "Nix"
-    "nsis": "NSIS"
-    "objectivec": "Objective-C"
-    "ocaml": "OCaml"
-    "osascript": "AppleScript"
-    "oxygene": "Oxygene"
-    "parser3": "Parser3"
-    "patch": "Diff"
-    "perl": "Perl"
-    "php": "PHP"
-    "phtml": "HTML"
-    "pl": "Perl"
-    "profile": "Python profile"
-    "protobuf": "Protocol Buffers"
-    "puppet": "Puppet"
-    "py": "Python"
-    "python": "Python"
-    "q": "Q"
-    "r": "R"
-    "rib": "RenderMan RIB"
-    "rsl": "RenderMan RSL"
-    "rst": "reStructuredText"
-    "ruby": "Ruby"
-    "ruleslanguage": "Oracle Rules Language"
-    "rust": "Rust"
-    "salt": "Salt"
-    "sass": "SASS"
-    "scala": "Scala"
-    "scheme": "Scheme"
-    "scilab": "Scilab"
-    "scss": "SCSS"
-    "sls": "Salt"
-    "smalltalk": "Smalltalk"
-    "sql": "SQL"
-    "swift": "Swift"
-    "tcl": "Tcl"
-    "tex": "TeX"
-    "thrift": "Thrift"
-    "typescript": "TypeScript"
-    "vagrant": "Vagrant"
-    "vagrantfile": "vagrant"
-    "vala": "Vala"
-    "vbnet": "VB.NET"
-    "vbs": "VBScript"
-    "vbscript": "VBScript"
-    "vhdl": "VHDL"
-    "vim": "VimL"
-    "x86asm": "Intel x86 Assembly"
-    "xhtml": "HTML"
-    "xml": "XML"

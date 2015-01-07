@@ -10,6 +10,7 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "highlight.js": ">=8.4.0"
+    "adm-zip": "0.4.4",
+    "request": "2.51.0"
   }
 }
