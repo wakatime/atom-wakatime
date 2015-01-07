@@ -170,7 +170,7 @@ sendHeartbeat = (file, time, isWrite) ->
             unless apikey
                 return
 
-            args = [cliLocation(), '--file', file.path, '--plugin', 'atom-wakatime/' + VERSION]
+            args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
             if isWrite
                 args.push('--write')
             process.execFile(python, args, (error, stdout, stderr) ->
