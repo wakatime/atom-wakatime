@@ -13,9 +13,11 @@ Installation
 
 3. Click `Settings`. Enter your [api key](https://wakatime.com/settings#apikey) from https://wakatime.com/settings#apikey.
 
-4. Use Atom like you normally do and your time will automatically be tracked for you.
+4. Restart Atom.
 
-5. Visit https://wakatime.com to see your logged time.
+5. Use Atom like you normally do and your time will automatically be tracked for you.
+
+6. Visit https://wakatime.com to see your logged time.
 
 
 Screen Shots
