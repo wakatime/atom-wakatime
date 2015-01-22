@@ -40,18 +40,15 @@ setupEventHandlers = () ->
             buffer = editor.getBuffer()
             buffer.on 'saved', (e) =>
                 file = e.file
-                time = Date.now()
-                sendHeartbeat(file, time, true)
+                if file? and file
+                    time = Date.now()
+                    sendHeartbeat(file, time, true)
             buffer.on 'changed', (e) =>
-                item = atom.workspaceView.getActivePaneItem()
-                if item? and item
-                    buffer = item.getBuffer()
-                    if buffer? and buffer and buffer.file?
-                        file = buffer.file
-                        if file? and file
-                            time = Date.now()
-                            if enoughTimePassed(time) or lastFile isnt file.path
-                                sendHeartbeat(file, time)
+                file = buffer.file
+                if file? and file
+                    time = Date.now()
+                    if enoughTimePassed(time) or lastFile isnt file.path
+                        sendHeartbeat(file, time)
 
 isPythonInstalled = (callback) ->
     pythonLocation((result) ->
