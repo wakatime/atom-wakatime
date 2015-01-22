@@ -41,14 +41,11 @@ setupEventHandlers = () ->
             buffer.on 'saved', (e) =>
                 file = e.file
                 if file? and file
-                    time = Date.now()
-                    sendHeartbeat(file, time, true)
+                    sendHeartbeat(file, true)
             buffer.on 'changed', (e) =>
                 file = buffer.file
                 if file? and file
-                    time = Date.now()
-                    if enoughTimePassed(time) or lastFile isnt file.path
-                        sendHeartbeat(file, time)
+                    sendHeartbeat(file)
 
 isPythonInstalled = (callback) ->
     pythonLocation((result) ->
@@ -158,27 +155,29 @@ unzip = (file, outputDir, cleanup) ->
     if cleanup
         fs.unlink(file)
     
-sendHeartbeat = (file, time, isWrite) ->
-    pythonLocation((python) ->
-        if python?
-            if not file.path? or file.path is undefined or fileIsIgnored(file.path)
-                return
-            apikey = atom.config.get("wakatime.apikey")
-            unless apikey
-                return
+sendHeartbeat = (file, isWrite) ->
+    time = Date.now()
+    if isWrite or enoughTimePassed(time) or lastFile isnt file.path
+        pythonLocation((python) ->
+            if python?
+                if not file.path? or file.path is undefined or fileIsIgnored(file.path)
+                    return
+                apikey = atom.config.get("wakatime.apikey")
+                unless apikey
+                    return
 
-            args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
-            if isWrite
-                args.push('--write')
-            process.execFile(python, args, (error, stdout, stderr) ->
-                if error?
-                    console.warn error
-                # else
-                #     console.log(args)
-            )
-            lastAction = time
-            lastFile = file.path
-    )
+                args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
+                if isWrite
+                    args.push('--write')
+                process.execFile(python, args, (error, stdout, stderr) ->
+                    if error?
+                        console.warn error
+                    # else
+                    #     console.log(args)
+                )
+                lastAction = time
+                lastFile = file.path
+        )
     
 fileIsIgnored = (file) ->
     patterns = atom.config.get("wakatime.ignore")
