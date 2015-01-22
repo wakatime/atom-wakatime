@@ -1,3 +1,10 @@
+###
+WakaTime
+Description: Analytics for programmers.
+Maintainer:  WakaTime <support@wakatime.com>
+License:     BSD, see LICENSE for more details.
+Website:     https://wakatime.com/
+###
 
 AdmZip = require 'adm-zip'
 fs = require 'fs'
