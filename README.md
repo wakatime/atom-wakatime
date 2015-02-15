@@ -7,7 +7,7 @@ Automatic time tracking for GitHub's Atom text editor.
 Installation
 ------------
 
-1. Navigate to `Atom` -> `Preferences...` -> `Packages` and search for `wakatime`.
+1. Navigate to `Atom` -> `Preferences... (Ctrl+Comma)` -> `Install` and search for `wakatime`.
 
 2. Click `Install`.
 
