@@ -3,6 +3,14 @@ History
 -------
 
 
+4.0.1 (2015-03-10)
+++++++++++++++++++
+
+- upgrade wakatime cli to v4.0.4
+- new options for excluding and including directories
+- use requests library instead of urllib2, so api SSL cert is verified
+
+
 4.0.0 (2015-01-21)
 ++++++++++++++++++
 
