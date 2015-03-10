@@ -27,10 +27,10 @@ module.exports =
         setupConfig()
         setupEventHandlers()
         console.log 'WakaTime v'+VERSION+' loaded.'
-    
+
 lastAction = 0
 lastFile = ''
-    
+
 enoughTimePassed = (time) ->
     return lastAction + 120000 < time
 
@@ -150,17 +150,17 @@ isCLIInstalled = () ->
     return fs.existsSync(cliLocation())
 
 cliLocation = () ->
-    dir = __dirname + path.sep + 'wakatime-master' + path.sep + 'wakatime-cli.py'
+    dir = __dirname + path.sep + 'wakatime-master' + path.sep + 'wakatime' + path.sep + 'cli.py'
     return dir
 
 installCLI = (callback) ->
-    console.log 'Downloading wakatime-cli...'
+    console.log 'Downloading wakatime cli...'
     url = 'https://github.com/wakatime/wakatime/archive/master.zip'
-    zipFile = __dirname + path.sep + 'wakatime-cli.zip'
+    zipFile = __dirname + path.sep + 'wakatime-master.zip'
     downloadFile(url, zipFile, ->
-        console.log 'Extracting wakatime-cli.zip file...'
+        console.log 'Extracting wakatime-master.zip file...'
         unzip(zipFile, __dirname, true)
-        console.log 'Finished installing wakatime-cli.'
+        console.log 'Finished installing wakatime cli.'
         if callback?
             callback()
     )
@@ -181,7 +181,7 @@ unzip = (file, outputDir, cleanup) ->
     zip.extractAllTo(outputDir, true)
     if cleanup
         fs.unlink(file)
-    
+
 sendHeartbeat = (file, isWrite) ->
     time = Date.now()
     if isWrite or enoughTimePassed(time) or lastFile isnt file.path
@@ -205,7 +205,7 @@ sendHeartbeat = (file, isWrite) ->
                 lastAction = time
                 lastFile = file.path
         )
-    
+
 fileIsIgnored = (file) ->
     patterns = atom.config.get("wakatime.ignore")
     ignore = false
