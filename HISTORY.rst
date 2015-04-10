@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.2 (2015-04-09)
+++++++++++++++++++
+
+- use new buffer events from current atom api
+
+
 4.0.1 (2015-03-10)
 ++++++++++++++++++
 
