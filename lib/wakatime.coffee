@@ -28,11 +28,11 @@ module.exports =
         setupEventHandlers()
         console.log 'WakaTime v'+VERSION+' loaded.'
 
-lastAction = 0
+lastHeartbeat = 0
 lastFile = ''
 
 enoughTimePassed = (time) ->
-    return lastAction + 120000 < time
+    return lastHeartbeat + 120000 < time
 
 setupConfig = () ->
     unless atom.config.get("wakatime.apikey")?
@@ -202,7 +202,7 @@ sendHeartbeat = (file, isWrite) ->
                     # else
                     #     console.log(args)
                 )
-                lastAction = time
+                lastHeartbeat = time
                 lastFile = file.path
         )
 
