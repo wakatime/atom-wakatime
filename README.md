@@ -11,7 +11,7 @@ Installation
 
 2. Click `Install`.
 
-3. Click `Settings`. Enter your [api key](https://wakatime.com/settings#apikey) from https://wakatime.com/settings#apikey.
+3. Click `Settings`. Enter your [api key](https://wakatime.com/settings#apikey).
 
 4. Restart Atom.
 
