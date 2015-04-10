@@ -42,14 +42,14 @@ setupConfig = () ->
         atom.config.set("wakatime", defaults)
 
 setupEventHandlers = () ->
-    atom.workspace.eachEditor (editor) =>
+    atom.workspace.observeTextEditors (editor) =>
         try
             buffer = editor.getBuffer()
-            buffer.on 'saved', (e) =>
+            buffer.onDidSave (e) =>
                 file = e.file
                 if file? and file
                     sendHeartbeat(file, true)
-            buffer.on 'changed', (e) =>
+            buffer.onDidChange (e) =>
                 file = buffer.file
                 if file? and file
                     sendHeartbeat(file)
