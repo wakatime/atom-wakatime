@@ -3,6 +3,18 @@ History
 -------
 
 
+4.0.4 (2015-04-23)
+++++++++++++++++++
+
+- verify SSL cert when downloading wakatime cli
+
+
+4.0.3 (2015-04-23)
+++++++++++++++++++
+
+- don't verify SSL cert when downloading wakatime cli for corporate proxies
+
+
 4.0.2 (2015-04-09)
 ++++++++++++++++++
 
