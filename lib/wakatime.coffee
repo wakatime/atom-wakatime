@@ -155,7 +155,7 @@ cliLocation = () ->
 
 installCLI = (callback) ->
     console.log 'Downloading wakatime cli...'
-    url = { url: 'https://github.com/wakatime/wakatime/archive/master.zip', strictSSL: false }
+    url = 'https://github.com/wakatime/wakatime/archive/master.zip'
     zipFile = __dirname + path.sep + 'wakatime-master.zip'
     downloadFile(url, zipFile, ->
         console.log 'Extracting wakatime-master.zip file...'
