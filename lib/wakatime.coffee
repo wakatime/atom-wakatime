@@ -182,29 +182,36 @@ unzip = (file, outputDir, cleanup) ->
     if cleanup
         fs.unlink(file)
 
+endsWith = (str, suffix) ->
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+
+shouldIgnore = (file) ->
+    return endsWith(file, 'COMMIT_EDITMSG')
+
 sendHeartbeat = (file, isWrite) ->
     time = Date.now()
     if isWrite or enoughTimePassed(time) or lastFile isnt file.path
-        pythonLocation((python) ->
-            if python?
-                if not file.path? or file.path is undefined or fileIsIgnored(file.path)
-                    return
-                apikey = atom.config.get("wakatime.apikey")
-                unless apikey
-                    return
+        if not shouldIgnore(file.path)
+            pythonLocation((python) ->
+                if python?
+                    if not file.path? or file.path is undefined or fileIsIgnored(file.path)
+                        return
+                    apikey = atom.config.get('wakatime.apikey')
+                    unless apikey
+                        return
 
-                args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
-                if isWrite
-                    args.push('--write')
-                process.execFile(python, args, (error, stdout, stderr) ->
-                    if error?
-                        console.warn error
-                    # else
-                    #     console.log(args)
-                )
-                lastHeartbeat = time
-                lastFile = file.path
-        )
+                    args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
+                    if isWrite
+                        args.push('--write')
+                    process.execFile(python, args, (error, stdout, stderr) ->
+                        if error?
+                            console.warn error
+                        # else
+                        #     console.log(args)
+                    )
+                    lastHeartbeat = time
+                    lastFile = file.path
+            )
 
 fileIsIgnored = (file) ->
     patterns = atom.config.get("wakatime.ignore")
