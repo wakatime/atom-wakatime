@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.7 (2015-05-05)
+++++++++++++++++++
+
+- correctly get current file in onDidSave event handler
+
+
 4.0.6 (2015-05-01)
 ++++++++++++++++++
 
