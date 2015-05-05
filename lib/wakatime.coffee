@@ -46,7 +46,7 @@ setupEventHandlers = () ->
         try
             buffer = editor.getBuffer()
             buffer.onDidSave (e) =>
-                file = e.file
+                file = buffer.file
                 if file? and file
                     sendHeartbeat(file, true)
             buffer.onDidChange (e) =>
