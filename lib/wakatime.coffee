@@ -38,7 +38,7 @@ setupConfig = () ->
     unless atom.config.get("wakatime.apikey")?
         defaults =
             apikey: ""
-            ignore: ["^/var/", "^/tmp/", "^/private/"]
+            ignore: ["^/var/", "^/tmp/", "^/private/", "COMMIT_EDITMSG$", "PULLREQ_EDITMSG$", "MERGE_MSG$"]
         atom.config.set("wakatime", defaults)
 
 setupEventHandlers = () ->
@@ -186,7 +186,7 @@ endsWith = (str, suffix) ->
     return str.indexOf(suffix, str.length - suffix.length) != -1
 
 shouldIgnore = (file) ->
-    return endsWith(file, 'COMMIT_EDITMSG')
+    return endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG')
 
 sendHeartbeat = (file, isWrite) ->
     time = Date.now()
