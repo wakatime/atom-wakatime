@@ -186,7 +186,7 @@ endsWith = (str, suffix) ->
     return str.indexOf(suffix, str.length - suffix.length) != -1
 
 shouldIgnore = (file) ->
-    return endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG')
+    return endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
 
 sendHeartbeat = (file, isWrite) ->
     time = Date.now()
