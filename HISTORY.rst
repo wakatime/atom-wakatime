@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.8 (2015-05-06)
+++++++++++++++++++
+
+- fix bug to prevent using undefined file path
+
+
 4.0.7 (2015-05-05)
 ++++++++++++++++++
 
