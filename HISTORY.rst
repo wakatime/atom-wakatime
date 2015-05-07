@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.9 (2015-05-06)
+++++++++++++++++++
+
+- send current line number of cursor in heartbeat
+
+
 4.0.8 (2015-05-06)
 ++++++++++++++++++
 
