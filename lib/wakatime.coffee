@@ -48,11 +48,24 @@ setupEventHandlers = () ->
             buffer.onDidSave (e) =>
                 file = buffer.file
                 if file? and file
-                    sendHeartbeat(file, true)
+                    lineno = null
+                    if editor.cursors.length > 0
+                        lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
+                    sendHeartbeat(file, lineno, true)
             buffer.onDidChange (e) =>
                 file = buffer.file
                 if file? and file
-                    sendHeartbeat(file)
+                    lineno = null
+                    if editor.cursors.length > 0
+                        lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
+                    sendHeartbeat(file, lineno)
+            editor.onDidChangeCursorPosition (e) =>
+                file = buffer.file
+                if file? and file
+                    lineno = null
+                    if editor.cursors.length > 0
+                        lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
+                    sendHeartbeat(file, lineno)
 
 isPythonInstalled = (callback) ->
     pythonLocation((result) ->
@@ -182,7 +195,7 @@ unzip = (file, outputDir, cleanup) ->
     if cleanup
         fs.unlink(file)
 
-sendHeartbeat = (file, isWrite) ->
+sendHeartbeat = (file, lineno, isWrite) ->
     time = Date.now()
     if isWrite or enoughTimePassed(time) or lastFile isnt file.path
         if not file.path? or file.path is undefined or fileIsIgnored(file.path)
@@ -196,6 +209,9 @@ sendHeartbeat = (file, isWrite) ->
                 args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
                 if isWrite
                     args.push('--write')
+                if lineno?
+                    args.push('--lineno')
+                    args.push(lineno)
                 process.execFile(python, args, (error, stdout, stderr) ->
                     if error?
                         console.warn error
