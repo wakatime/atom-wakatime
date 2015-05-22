@@ -190,10 +190,11 @@ downloadFile = (url, outputFile, callback) ->
     )
 
 unzip = (file, outputDir, cleanup) ->
-    zip = new AdmZip(file)
-    zip.extractAllTo(outputDir, true)
-    if cleanup
-        fs.unlink(file)
+    if fs.existsSync(file)
+        zip = new AdmZip(file)
+        zip.extractAllTo(outputDir, true)
+        if cleanup
+            fs.unlink(file)
 
 sendHeartbeat = (file, lineno, isWrite) ->
     time = Date.now()
