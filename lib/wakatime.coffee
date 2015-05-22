@@ -10,7 +10,7 @@ AdmZip = require 'adm-zip'
 fs = require 'fs'
 os = require 'os'
 path = require 'path'
-process = require('child_process');
+process = require 'child_process'
 request = require 'request'
 
 module.exports =
