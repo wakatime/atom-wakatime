@@ -172,6 +172,8 @@ installCLI = (callback) ->
     zipFile = __dirname + path.sep + 'wakatime-master.zip'
     downloadFile(url, zipFile, ->
         console.log 'Extracting wakatime-master.zip file...'
+        if fs.existsSync(__dirname + path.sep + 'wakatime-master')
+            fs.unlink(__dirname + path.sep + 'wakatime-master')
         unzip(zipFile, __dirname, true)
         console.log 'Finished installing wakatime cli.'
         if callback?
