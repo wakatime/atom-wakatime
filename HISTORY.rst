@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.10 (2015-06-23)
+++++++++++++++++++
+
+- update wakatime cli from github repo if there is a new version
+
+
 4.0.9 (2015-05-06)
 ++++++++++++++++++
 
