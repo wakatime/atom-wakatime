@@ -12,6 +12,9 @@ os = require 'os'
 path = require 'path'
 process = require 'child_process'
 request = require 'request'
+rimraf = require 'rimraf'
+
+latestCLIVersion = '4.0.16'
 
 module.exports =
 
@@ -20,6 +23,11 @@ module.exports =
 
         if not isCLIInstalled()
             installCLI()
+        else
+            isCLILatest((latest) ->
+                if not latest
+                    installCLI()
+            )
         isPythonInstalled((installed) ->
             if not installed
                 installPython()
@@ -162,6 +170,21 @@ installPython = () ->
 isCLIInstalled = () ->
     return fs.existsSync(cliLocation())
 
+isCLILatest = (callback) ->
+    pythonLocation((python) ->
+        if python?
+            args = [cliLocation(), '--version']
+            process.execFile(python, args, (error, stdout, stderr) ->
+                if not error?
+                    if stderr.trim() == latestCLIVersion
+                        callback(true)
+                    else
+                        callback(false)
+                else
+                    callback(false)
+            )
+    )
+
 cliLocation = () ->
     dir = __dirname + path.sep + 'wakatime-master' + path.sep + 'wakatime' + path.sep + 'cli.py'
     return dir
@@ -173,11 +196,12 @@ installCLI = (callback) ->
     downloadFile(url, zipFile, ->
         console.log 'Extracting wakatime-master.zip file...'
         if fs.existsSync(__dirname + path.sep + 'wakatime-master')
-            fs.unlink(__dirname + path.sep + 'wakatime-master')
-        unzip(zipFile, __dirname, true)
-        console.log 'Finished installing wakatime cli.'
-        if callback?
-            callback()
+            rimraf(__dirname + path.sep + 'wakatime-master', ->
+                unzip(zipFile, __dirname, true)
+                console.log 'Finished installing wakatime cli.'
+                if callback?
+                    callback()
+            )
     )
 
 downloadFile = (url, outputFile, callback) ->
