@@ -3,6 +3,12 @@ History
 -------
 
 
+4.0.11 (2015-06-25)
+++++++++++++++++++
+
+- when installing wakatime cli, always extract zip file
+
+
 4.0.10 (2015-06-23)
 ++++++++++++++++++
 
