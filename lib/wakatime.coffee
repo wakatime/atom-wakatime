@@ -194,15 +194,23 @@ installCLI = (callback) ->
     url = 'https://github.com/wakatime/wakatime/archive/master.zip'
     zipFile = __dirname + path.sep + 'wakatime-master.zip'
     downloadFile(url, zipFile, ->
-        console.log 'Extracting wakatime-master.zip file...'
-        if fs.existsSync(__dirname + path.sep + 'wakatime-master')
-            rimraf(__dirname + path.sep + 'wakatime-master', ->
-                unzip(zipFile, __dirname, true)
-                console.log 'Finished installing wakatime cli.'
-                if callback?
-                    callback()
-            )
+        extractCLI(zipFile, callback)
     )
+
+extractCLI = (zipFile, callback) ->
+    console.log 'Extracting wakatime-master.zip file...'
+    if fs.existsSync(__dirname + path.sep + 'wakatime-master')
+        rimraf(__dirname + path.sep + 'wakatime-master', ->
+            unzip(zipFile, __dirname, true)
+            console.log 'Finished installing wakatime cli.'
+            if callback?
+                callback()
+        )
+    else
+        unzip(zipFile, __dirname, true)
+        console.log 'Finished installing wakatime cli.'
+        if callback?
+            callback()
 
 downloadFile = (url, outputFile, callback) ->
     r = request(url)
