@@ -224,7 +224,7 @@ downloadFile = (url, outputFile, callback) ->
   )
 
 unzip = (file, outputDir, cleanup) ->
-  if f s.existsSync(file)
+  if fs.existsSync(file)
     zip = new AdmZip(file)
     zip.extractAllTo(outputDir, true)
     if cleanup
