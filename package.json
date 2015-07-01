@@ -10,8 +10,8 @@
     "atom": ">0.50.0"
   },
   "dependencies": {
-    "adm-zip": "0.4.4",
-    "request": "2.51.0",
-    "rimraf": "2.4.0"
+    "adm-zip": "0.4.7",
+    "request": "2.58.0",
+    "rimraf": "2.4.1"
   }
 }
