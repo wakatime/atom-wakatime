@@ -14,7 +14,7 @@ process = require 'child_process'
 request = require 'request'
 rimraf = require 'rimraf'
 
-latestCLIVersion = '4.0.16'
+latestCLIVersion = '4.1.0'
 
 module.exports =
 
