@@ -22,11 +22,15 @@ module.exports =
     window.VERSION = atom.packages.getLoadedPackage('wakatime').metadata.version
 
     if not isCLIInstalled()
-      installCLI()
+      installCLI(->
+        console.log 'Finished installing wakatime cli.'
+      )
     else
       isCLILatest((latest) ->
         if not latest
-          installCLI()
+          installCLI(->
+            console.log 'Finished installing wakatime cli.'
+          )
       )
     isPythonInstalled((installed) ->
       if not installed
@@ -200,17 +204,15 @@ installCLI = (callback) ->
 extractCLI = (zipFile, callback) ->
   console.log 'Extracting wakatime-master.zip file...'
   if fs.existsSync(__dirname + path.sep + 'wakatime-master')
-    rimraf(__dirname + path.sep + 'wakatime-master', ->
-      unzip(zipFile, __dirname, true)
-      console.log 'Finished installing wakatime cli.'
-      if callback?
-        callback()
-    )
+    try
+      rimraf(__dirname + path.sep + 'wakatime-master', ->
+        unzip(zipFile, __dirname, callback)
+      )
+    catch e
+      console.warn e
+      unzip(zipFile, __dirname, callback)
   else
-    unzip(zipFile, __dirname, true)
-    console.log 'Finished installing wakatime cli.'
-    if callback?
-      callback()
+    unzip(zipFile, __dirname, callback)
 
 downloadFile = (url, outputFile, callback) ->
   r = request(url)
@@ -223,7 +225,7 @@ downloadFile = (url, outputFile, callback) ->
     )
   )
 
-unzip = (file, outputDir, cleanup) ->
+unzip = (file, outputDir, callback) ->
   if fs.existsSync(file)
     zip = new AdmZip(file)
     try
@@ -231,8 +233,9 @@ unzip = (file, outputDir, cleanup) ->
     catch e
       console.warn e
     finally
-      if cleanup
-        fs.unlink(file)
+      fs.unlink(file)
+      if callback?
+        callback()
 
 sendHeartbeat = (file, lineno, isWrite) ->
   time = Date.now()
