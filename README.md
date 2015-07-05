@@ -20,6 +20,26 @@ Installation
 6. Visit https://wakatime.com to see your logged time.
 
 
+Configuring
+-----------
+
+Settings for atom-wakatime are under `Settings -> Packages -> wakatime -> Settings`.
+
+Additional settings are in `$HOME/.wakatime.cfg` for [wakatime cli](https://github.com/wakatime/wakatime#configuring).
+
+
+Troubleshooting
+---------------
+
+Note: Behind a proxy? Configure Atom to use your proxy when installing wakatime:
+https://github.com/atom/apm#behind-a-firewall
+
+Atom writes errors to the developer console at `View -> Developer -> Toggle Developer Tools`.
+
+Troubleshooting wakatime cli:
+https://github.com/wakatime/wakatime#troubleshooting
+
+
 Screen Shots
 ------------
 
