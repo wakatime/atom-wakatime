@@ -3,6 +3,15 @@ History
 -------
 
 
+4.0.12 (2015-07-05)
+++++++++++++++++++
+
+- catch exceptions from rimraf when removing old wakatime cli directory
+- catch exceptions from adm-zip when wakatime cli zip corrupted
+- correct priority for project detection
+- upgrade wakatime cli to v4.1.0
+
+
 4.0.11 (2015-06-25)
 ++++++++++++++++++
 
