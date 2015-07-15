@@ -20,6 +20,12 @@ Installation
 6. Visit https://wakatime.com to see your logged time.
 
 
+Screen Shots
+------------
+
+![Project Overview](https://wakatime.com/static/img/ScreenShots/ScreenShot-2014-10-29.png)
+
+
 Configuring
 -----------
 
@@ -36,11 +42,4 @@ https://github.com/atom/apm#behind-a-firewall
 
 Atom writes errors to the developer console at `View -> Developer -> Toggle Developer Tools`.
 
-Troubleshooting wakatime cli:
-https://github.com/wakatime/wakatime#troubleshooting
-
-
-Screen Shots
-------------
-
-![Project Overview](https://wakatime.com/static/img/ScreenShots/ScreenShot-2014-10-29.png)
+For more general troubleshooting information, see [wakatime/wakatime#troubleshooting](https://github.com/wakatime/wakatime#troubleshooting).
