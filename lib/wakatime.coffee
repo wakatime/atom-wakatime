@@ -151,9 +151,9 @@ pythonLocation = (callback, locations) ->
 
 installPython = () ->
   if os.type() is 'Windows_NT'
-    url = 'https://www.python.org/ftp/python/3.4.2/python-3.4.2.msi';
+    url = 'https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi';
     if os.arch().indexOf('x64') > -1
-      url = "https://www.python.org/ftp/python/3.4.2/python-3.4.2.amd64.msi";
+      url = "https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi";
     console.log 'Downloading python...'
     msiFile = __dirname + path.sep + 'python.msi'
     downloadFile(url, msiFile, ->
