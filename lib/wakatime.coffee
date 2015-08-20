@@ -34,7 +34,12 @@ module.exports =
       )
     isPythonInstalled((installed) ->
       if not installed
-        installPython()
+        atom.confirm
+          message: 'WakaTime requires Python'
+          detailedMessage: 'Let\'s download and install Python now?'
+          buttons:
+            OK: -> installPython()
+            Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
     )
     setupConfig()
     setupEventHandlers()
