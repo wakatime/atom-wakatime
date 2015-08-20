@@ -3,6 +3,14 @@ History
 -------
 
 
+4.0.13 (2015-08-20)
+++++++++++++++++++
+
+- prompt the user before installing python
+- remove wakatime cli directory when package is uninstalled
+- use python v3.4.3
+
+
 4.0.12 (2015-07-05)
 ++++++++++++++++++
 
