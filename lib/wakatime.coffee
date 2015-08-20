@@ -16,10 +16,15 @@ rimraf = require 'rimraf'
 
 latestCLIVersion = '4.1.0'
 
+packageVersion = null
+unloadHandler = null
+lastHeartbeat = 0
+lastFile = ''
+
 module.exports =
 
   activate: (state) ->
-    window.VERSION = atom.packages.getLoadedPackage('wakatime').metadata.version
+    packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
 
     if not isCLIInstalled()
       installCLI(->
@@ -41,12 +46,10 @@ module.exports =
             OK: -> installPython()
             Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
     )
+    cleanupOnUninstall()
     setupConfig()
     setupEventHandlers()
-    console.log 'WakaTime v'+VERSION+' loaded.'
-
-lastHeartbeat = 0
-lastFile = ''
+    console.log 'WakaTime v'+packageVersion+' loaded.'
 
 enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
@@ -57,6 +60,18 @@ setupConfig = () ->
       apikey: ""
       ignore: ["^/var/", "^/tmp/", "^/private/", "COMMIT_EDITMSG$", "PULLREQ_EDITMSG$", "MERGE_MSG$"]
     atom.config.set("wakatime", defaults)
+
+cleanupOnUninstall = () ->
+  if unloadHandler?
+    unloadHandler.dispose()
+    unloadHandler = null
+  unloadHandler = atom.packages.onDidUnloadPackage((p) ->
+    if p? and p.name == 'wakatime'
+      removeCLI()
+      if unloadHandler?
+        unloadHandler.dispose()
+        unloadHandler = null
+  )
 
 setupEventHandlers = () ->
   atom.workspace.observeTextEditors (editor) =>
@@ -208,16 +223,24 @@ installCLI = (callback) ->
 
 extractCLI = (zipFile, callback) ->
   console.log 'Extracting wakatime-master.zip file...'
+  removeCLI(->
+    unzip(zipFile, __dirname, callback)
+  )
+
+removeCLI = (callback) ->
   if fs.existsSync(__dirname + path.sep + 'wakatime-master')
     try
       rimraf(__dirname + path.sep + 'wakatime-master', ->
-        unzip(zipFile, __dirname, callback)
+        if callback?
+          callback()
       )
     catch e
       console.warn e
-      unzip(zipFile, __dirname, callback)
+      if callback?
+        callback()
   else
-    unzip(zipFile, __dirname, callback)
+    if callback?
+      callback()
 
 downloadFile = (url, outputFile, callback) ->
   r = request(url)
@@ -253,7 +276,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
         unless apikey
           return
 
-        args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + VERSION]
+        args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + packageVersion]
         if isWrite
           args.push('--write')
         if lineno?
