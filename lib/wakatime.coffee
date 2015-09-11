@@ -255,8 +255,8 @@ downloadFile = (url, outputFile, callback) ->
 
 unzip = (file, outputDir, callback) ->
   if fs.existsSync(file)
-    zip = new AdmZip(file)
     try
+      zip = new AdmZip(file)
       zip.extractAllTo(outputDir, true)
     catch e
       console.warn e
