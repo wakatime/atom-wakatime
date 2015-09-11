@@ -3,6 +3,16 @@ History
 -------
 
 
+4.0.17 (2015-09-10)
+++++++++++++++++++
+
+- prevent errors from corrupted wakatime cli zip file download
+- upgrade wakatime cli to v4.1.6
+- new --entity and --entitytype command line arguments
+- fix entry point for pypi distribution
+- allow passing command line arguments using sys.argv
+
+
 4.0.16 (2015-08-28)
 ++++++++++++++++++
 
