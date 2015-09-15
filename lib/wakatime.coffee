@@ -22,6 +22,21 @@ lastHeartbeat = 0
 lastFile = ''
 
 module.exports =
+  config:
+    apikey:
+      title: 'Api Key'
+      description: 'Your secret key from https://wakatime.com/settings.'
+      type: 'string'
+      default: ''
+      order: 1
+    exclude:
+      title: 'Exclude File Paths'
+      description: 'Exclude these file paths from logging; POSIX regex patterns'
+      type: 'array'
+      default: ["^/var/", "^/tmp/", "^/private/", "COMMIT_EDITMSG$", "PULLREQ_EDITMSG$", "MERGE_MSG$"]
+      items:
+        type: 'string'
+      order: 2
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
@@ -47,19 +62,11 @@ module.exports =
             Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
     )
     cleanupOnUninstall()
-    setupConfig()
     setupEventHandlers()
     console.log 'WakaTime v'+packageVersion+' loaded.'
 
 enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
-
-setupConfig = () ->
-  unless atom.config.get("wakatime.apikey")?
-    defaults =
-      apikey: ""
-      ignore: ["^/var/", "^/tmp/", "^/private/", "COMMIT_EDITMSG$", "PULLREQ_EDITMSG$", "MERGE_MSG$"]
-    atom.config.set("wakatime", defaults)
 
 cleanupOnUninstall = () ->
   if unloadHandler?
@@ -295,7 +302,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
     return true
-  patterns = atom.config.get("wakatime.ignore")
+  patterns = atom.config.get("wakatime.exclude")
   ignore = false
   for pattern in patterns
     re = new RegExp(pattern, "gi")
