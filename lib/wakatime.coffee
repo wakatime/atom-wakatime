@@ -29,11 +29,11 @@ module.exports =
       type: 'string'
       default: ''
       order: 1
-    exclude:
+    ignore:
       title: 'Exclude File Paths'
       description: 'Exclude these file paths from logging; POSIX regex patterns'
       type: 'array'
-      default: ["^/var/", "^/tmp/", "^/private/", "COMMIT_EDITMSG$", "PULLREQ_EDITMSG$", "MERGE_MSG$"]
+      default: ['^/var/', '^/tmp/', '^/private/', 'COMMIT_EDITMSG$', 'PULLREQ_EDITMSG$', 'MERGE_MSG$']
       items:
         type: 'string'
       order: 2
@@ -302,7 +302,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
     return true
-  patterns = atom.config.get("wakatime.exclude")
+  patterns = atom.config.get("wakatime.ignore")
   ignore = false
   for pattern in patterns
     re = new RegExp(pattern, "gi")
