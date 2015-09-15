@@ -3,7 +3,7 @@ History
 -------
 
 
-4.0.18 (2015-09-14)
+4.1.0 (2015-09-14)
 ++++++++++++++++++
 
 - add settings button to wakatime package in plugins menu list
