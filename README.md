@@ -1,7 +1,7 @@
 atom-wakatime
 =============
 
-Automatic time tracking for GitHub's Atom text editor.
+Quantify your coding inside GitHub's Atom editor.
 
 
 Installation
