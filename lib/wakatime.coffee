@@ -289,11 +289,18 @@ sendHeartbeat = (file, lineno, isWrite) ->
         if lineno?
           args.push('--lineno')
           args.push(lineno)
-        process.execFile(python, args, (error, stdout, stderr) ->
+        proc = process.execFile(python, args, (error, stdout, stderr) ->
           if error?
-            console.warn error
-          # else
-          #     console.log(args)
+            if stderr? and stderr != ''
+              console.warn stderr
+            if stdout? and stdout != ''
+              console.warn stdout
+            if proc.exitCode == 102
+              console.warn 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
+            else if proc.exitCode == 103
+              console.warn 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
+            else
+              console.warn error
         )
         lastHeartbeat = time
         lastFile = file.path
