@@ -14,7 +14,7 @@ process = require 'child_process'
 request = require 'request'
 rimraf = require 'rimraf'
 
-latestCLIVersion = '4.1.6'
+latestCLIVersion = '4.1.7'
 
 packageVersion = null
 unloadHandler = null
