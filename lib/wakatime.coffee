@@ -14,8 +14,6 @@ process = require 'child_process'
 request = require 'request'
 rimraf = require 'rimraf'
 
-latestCLIVersion = '4.1.8'
-
 packageVersion = null
 unloadHandler = null
 lastHeartbeat = 0
@@ -207,13 +205,37 @@ isCLILatest = (callback) ->
       args = [cliLocation(), '--version']
       process.execFile(python, args, (error, stdout, stderr) ->
         if not error?
-          if stderr.trim() == latestCLIVersion
-            callback(true)
-          else
-            callback(false)
+          currentVersion = stderr.trim()
+          console.log 'Current wakatime-cli version is ' + currentVersion
+          console.log 'Checking for updates to wakatime-cli...'
+          getLatestCliVersion((latestVersion) ->
+            if currentVersion == latestVersion
+              console.log 'wakatime-cli is up to date.'
+              if callback?
+                callback(true)
+            else
+              console.log 'Found an updated wakatime-cli v' + latestVersion
+              if callback?
+                callback(false)
+          )
         else
-          callback(false)
+          if callback?
+            callback(false)
       )
+  )
+
+getLatestCliVersion = (callback) ->
+  url = 'https://raw.githubusercontent.com/wakatime/wakatime/master/wakatime/__about__.py'
+  request.get(url, (error, response, body) ->
+    version = null
+    if !error and response.statusCode == 200
+      re = new RegExp(/__version_info__ = \('([0-9]+)', '([0-9]+)', '([0-9]+)'\)/g)
+      for line in body.split('\n')
+        match = re.exec(line)
+        if match?
+          version = match[1] + '.' + match[2] + '.' + match[3]
+    if callback?
+      callback(version)
   )
 
 cliLocation = () ->
@@ -309,10 +331,10 @@ sendHeartbeat = (file, lineno, isWrite) ->
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
     return true
-  patterns = atom.config.get("wakatime.ignore")
+  patterns = atom.config.get('wakatime.ignore')
   ignore = false
   for pattern in patterns
-    re = new RegExp(pattern, "gi")
+    re = new RegExp(pattern, 'gi')
     if re.test(file)
       ignore = true
       break
