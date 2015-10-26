@@ -10,14 +10,16 @@ AdmZip = require 'adm-zip'
 fs = require 'fs'
 os = require 'os'
 path = require 'path'
-process = require 'child_process'
+execFile = require('child_process').execFile
 request = require 'request'
 rimraf = require 'rimraf'
+ini = require 'ini'
 
 packageVersion = null
 unloadHandler = null
 lastHeartbeat = 0
 lastFile = ''
+apiKey = null
 
 module.exports =
   config:
@@ -61,7 +63,30 @@ module.exports =
     )
     cleanupOnUninstall()
     setupEventHandlers()
-    console.log 'WakaTime v'+packageVersion+' loaded.'
+    setApiKey()
+
+getUserHome = ->
+  process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
+
+setApiKey = ->
+  loadApiKey (err, key) ->
+    if err
+      console.log err.message
+    else
+      apiKey = key
+
+loadApiKey = (cb) ->
+  key = atom.config.get('wakatime.apikey')
+  return cb(null, key) if key? && key.length > 0
+  wakatimeConfigFile = path.join getUserHome(), '.wakatime.cfg'
+  fs.readFile wakatimeConfigFile, 'utf-8', (err, configContent) ->
+    return cb(new Error('could not read wakatime config')) if err?
+    wakatimeConfig = ini.parse configContent
+    key = wakatimeConfig?.settings?.api_key
+    if key?
+      cb null, key
+    else
+      cb new Error('wakatime key not found')
 
 enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
@@ -165,7 +190,7 @@ pythonLocation = (callback, locations) ->
       callback(null)
       return
     location = locations[0]
-    process.execFile(location, args, (error, stdout, stderr) ->
+    execFile(location, args, (error, stdout, stderr) ->
       if not error?
         global.cachedPythonLocation = location
         callback(location)
@@ -184,7 +209,7 @@ installPython = () ->
     downloadFile(url, msiFile, ->
       console.log 'Installing python...'
       args = ['/i', msiFile, '/norestart', '/qb!']
-      process.execFile('msiexec', args, (error, stdout, stderr) ->
+      execFile('msiexec', args, (error, stdout, stderr) ->
         if error?
           console.warn error
           window.alert('Error encountered while installing Python.')
@@ -203,7 +228,7 @@ isCLILatest = (callback) ->
   pythonLocation((python) ->
     if python?
       args = [cliLocation(), '--version']
-      process.execFile(python, args, (error, stdout, stderr) ->
+      execFile(python, args, (error, stdout, stderr) ->
         if not error?
           currentVersion = stderr.trim()
           console.log 'Current wakatime-cli version is ' + currentVersion
@@ -299,34 +324,29 @@ sendHeartbeat = (file, lineno, isWrite) ->
   if isWrite or enoughTimePassed(time) or lastFile isnt file.path
     if not file.path? or file.path is undefined or fileIsIgnored(file.path)
       return
-    pythonLocation((python) ->
-      if python?
-        apikey = atom.config.get('wakatime.apikey')
-        unless apikey
-          return
-
-        args = [cliLocation(), '--file', file.path, '--key', apikey, '--plugin', 'atom-wakatime/' + packageVersion]
-        if isWrite
-          args.push('--write')
-        if lineno?
-          args.push('--lineno')
-          args.push(lineno)
-        proc = process.execFile(python, args, (error, stdout, stderr) ->
-          if error?
-            if stderr? and stderr != ''
-              console.warn stderr
-            if stdout? and stdout != ''
-              console.warn stdout
-            if proc.exitCode == 102
-              console.warn 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
-            else if proc.exitCode == 103
-              console.warn 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
-            else
-              console.warn error
-        )
-        lastHeartbeat = time
-        lastFile = file.path
-    )
+    pythonLocation (python) ->
+      return unless python? && apiKey?
+      args = [cliLocation(), '--file', file.path, '--key', apiKey, '--plugin', 'atom-wakatime/' + packageVersion]
+      if isWrite
+        args.push('--write')
+      if lineno?
+        args.push('--lineno')
+        args.push(lineno)
+      proc = execFile(python, args, (error, stdout, stderr) ->
+        if error?
+          if stderr? and stderr != ''
+            console.warn stderr
+          if stdout? and stdout != ''
+            console.warn stdout
+          if proc.exitCode == 102
+            console.warn 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
+          else if proc.exitCode == 103
+            console.warn 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
+          else
+            console.warn error
+      )
+      lastHeartbeat = time
+      lastFile = file.path
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
