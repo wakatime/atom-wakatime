@@ -140,6 +140,7 @@ pythonLocation = (callback, locations) ->
   else
     if not locations?
       locations = [
+        __dirname + path.sep + 'python' + path.sep + 'pythonw',
         "pythonw",
         "python",
         "/usr/local/bin/python",
@@ -201,20 +202,19 @@ pythonLocation = (callback, locations) ->
 
 installPython = () ->
   if os.type() is 'Windows_NT'
-    url = 'https://www.python.org/ftp/python/3.4.3/python-3.4.3.msi';
+    pyVer = '3.5.0'
+    arch = 'win32'
     if os.arch().indexOf('x64') > -1
-      url = "https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi";
+      arch = 'amd64'
+    url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
+
     console.log 'Downloading python...'
-    msiFile = __dirname + path.sep + 'python.msi'
-    downloadFile(url, msiFile, ->
-      console.log 'Installing python...'
-      args = ['/i', msiFile, '/norestart', '/qb!']
-      execFile('msiexec', args, (error, stdout, stderr) ->
-        if error?
-          console.warn error
-          window.alert('Error encountered while installing Python.')
-        else
-          fs.unlink(msiFile)
+    zipFile = __dirname + path.sep + 'python.zip'
+    downloadFile(url, zipFile, ->
+
+      console.log 'Extracting python...'
+      unzip(zipFile, __dirname + path.sep + 'python', ->
+          fs.unlink(zipFile)
           console.log 'Finished installing python.'
       )
     )
