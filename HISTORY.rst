@@ -3,6 +3,12 @@ History
 -------
 
 
+5.0.2 (2015-11-29)
+++++++++++++++++++
+
+- lazy load package dependencies to speed up Atom startup time
+
+
 5.0.1 (2015-11-20)
 ++++++++++++++++++
 
