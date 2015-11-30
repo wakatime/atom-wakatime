@@ -6,20 +6,22 @@ License:     BSD, see LICENSE for more details.
 Website:     https://wakatime.com/
 ###
 
-AdmZip = require 'adm-zip'
-fs = require 'fs'
-os = require 'os'
-path = require 'path'
-execFile = require('child_process').execFile
-request = require 'request'
-rimraf = require 'rimraf'
-ini = require 'ini'
-
+# package-global attributes
 packageVersion = null
 unloadHandler = null
 lastHeartbeat = 0
 lastFile = ''
 apiKey = null
+
+# lazy-load packages during activation to speed up Atom startup time
+AdmZip = null
+fs = null
+os = null
+path = null
+execFile = null
+request = null
+rimraf = null
+ini = null
 
 module.exports =
   config:
@@ -40,6 +42,8 @@ module.exports =
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
+
+    loadPackages()
 
     if not isCLIInstalled()
       installCLI(->
@@ -64,6 +68,16 @@ module.exports =
     cleanupOnUninstall()
     setupEventHandlers()
     setApiKey()
+
+loadPackages = ->
+  AdmZip = require 'adm-zip'
+  fs = require 'fs'
+  os = require 'os'
+  path = require 'path'
+  execFile = require('child_process').execFile
+  request = require 'request'
+  rimraf = require 'rimraf'
+  ini = require 'ini'
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
