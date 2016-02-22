@@ -7,17 +7,19 @@ Quantify your coding inside GitHub's Atom editor.
 Installation
 ------------
 
-1. Navigate to `Atom` -> `Preferences... (Ctrl+Comma)` -> `Install` and search for `wakatime`.
+1. Inside Atom, navigate to `Preferences`/`Settings` -> `Install` and search for `wakatime`.
 
-2. Click `Install`.
+![Project Overview](https://wakatime.com/static/img/ScreenShots/atom-wakatime-install-1.png)
+
+2. Click the `Install` button.
+
+![Project Overview](https://wakatime.com/static/img/ScreenShots/atom-wakatime-install-2.png)
 
 3. Click `Settings`, then enter your [api key](https://wakatime.com/settings#apikey).
 
-4. Restart Atom.
+4. Use Atom like you normally do and your time will automatically be tracked for you.
 
-5. Use Atom like you normally do and your time will automatically be tracked for you.
-
-6. Visit https://wakatime.com to see your logged time.
+5. Visit https://wakatime.com to see your logged time.
 
 
 Screen Shots
