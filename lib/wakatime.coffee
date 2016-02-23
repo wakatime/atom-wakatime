@@ -287,18 +287,30 @@ unzip = (file, outputDir, callback) ->
         callback()
 
 sendHeartbeat = (file, lineno, isWrite) ->
+  if not file.path? or file.path is undefined or fileIsIgnored(file.path)
+    return
+
   time = Date.now()
-  if isWrite or enoughTimePassed(time) or lastFile isnt file.path
-    if not file.path? or file.path is undefined or fileIsIgnored(file.path)
-      return
+  currentFile = file.path
+  if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
     pythonLocation (python) ->
       return unless python? && apiKey?
-      args = [cliLocation(), '--file', file.path, '--key', apiKey, '--plugin', 'atom-wakatime/' + packageVersion]
+      args = [cliLocation(), '--file', currentFile, '--key', apiKey, '--plugin', 'atom-wakatime/' + packageVersion]
       if isWrite
         args.push('--write')
       if lineno?
         args.push('--lineno')
         args.push(lineno)
+
+      if atom.project.contains(file.path)
+        currentFile = file.path
+        for rootDir in atom.project.rootDirectories
+          realPath = rootDir.realPath
+          if currentFile.indexOf(realPath) > -1
+            args.push('--alternate-project')
+            args.push(path.basename(realPath))
+            break
+
       proc = execFile(python, args, (error, stdout, stderr) ->
         if error?
           if stderr? and stderr != ''
