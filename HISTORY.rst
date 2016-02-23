@@ -3,6 +3,12 @@ History
 -------
 
 
+5.0.3 (2016-02-23)
+++++++++++++++++++
+
+- detect project name from open project folders
+
+
 5.0.2 (2015-11-29)
 ++++++++++++++++++
 
