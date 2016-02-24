@@ -356,13 +356,13 @@ sendHeartbeat = (file, lineno, isWrite) ->
             title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
 
           console.warn msg
-          statusBarTileView.setStatus(status)
-          statusBarTileView.setTitle(title)
+          statusBarTileView?.setStatus(status)
+          statusBarTileView?.setTitle(title)
 
         else
-          statusBarTileView.setStatus()
+          statusBarTileView?.setStatus()
           today = new Date()
-          statusBarTileView.setTitle('Last heartbeat sent ' + formatDate(today))
+          statusBarTileView?.setTitle('Last heartbeat sent ' + formatDate(today))
       )
       lastHeartbeat = time
       lastFile = file.path
