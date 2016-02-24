@@ -1,3 +1,4 @@
+{Disposable} = require 'atom'
 path = require 'path'
 
 class StatusBarTileView extends HTMLElement
@@ -26,6 +27,8 @@ class StatusBarTileView extends HTMLElement
     @msg?.textContent = @prepend + content
 
   setTitle: (text) ->
-    @setAttribute('title', text)
+    @tooltip?.dispose()
+    @tooltip = atom.tooltips.add this,
+      title: text
 
 module.exports = document.registerElement('wakatime-status-bar-tile', prototype: StatusBarTileView.prototype, extends: 'div')
