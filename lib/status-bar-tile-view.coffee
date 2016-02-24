@@ -1,10 +1,12 @@
 {Disposable} = require 'atom'
 path = require 'path'
 
+element_name = 'waka-status-bar' + Date.now()
+
 class StatusBarTileView extends HTMLElement
 
   init: ->
-    @classList.add('wakatime-status-bar-tile', 'inline-block')
+    @classList.add(element_name, 'inline-block')
 
     @link = document.createElement('a')
     @link.classList.add('inline-block')
@@ -38,4 +40,4 @@ class StatusBarTileView extends HTMLElement
     @tooltip = atom.tooltips.add this,
       title: text
 
-module.exports = document.registerElement('wakatime-status-bar-tile' + Date.now(), prototype: StatusBarTileView.prototype, extends: 'div')
+module.exports = document.registerElement(element_name, prototype: StatusBarTileView.prototype, extends: 'div')
