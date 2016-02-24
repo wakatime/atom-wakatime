@@ -71,17 +71,20 @@ module.exports =
     setupEventHandlers()
     setApiKey()
     pluginReady = true
-    statusBarTileView?.setStatus('ready')
+    statusBarTileView?.setTitle('WakaTime initialized')
+    statusBarTileView?.setStatus()
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
     statusBarTileView.init()
-    @statusBarTile = statusBar.addLeftTile(item: statusBarTileView, priority: 100)
+    @statusBarTile = statusBar.addRightTile(item: statusBarTileView, priority: 300)
     if pluginReady
-      statusBarTileView.setStatus('ready')
+      statusBarTileView.setTitle('WakaTime initialized')
+      statusBarTileView.setStatus()
 
   deactivate: ->
     @statusBarTile?.destroy()
+    statusBarTileView?.destroy()
     statusBarTileView = null
 
 
@@ -336,19 +339,30 @@ sendHeartbeat = (file, lineno, isWrite) ->
           if stdout? and stdout != ''
             console.warn stdout
           if proc.exitCode == 102
-            msg = 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
+            msg = null
+            status = null
+            title = 'WakaTime Offline, coding activity will sync when online.'
           else if proc.exitCode == 103
-            msg = 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
+            msg = 'An error occured while parsing ~/.wakatime.cfg. Check ~/.wakatime.log for more info.'
+            status = 'Error'
+            title = msg
+          else if proc.exitCode == 104
+            msg = 'Invalid API Key. Make sure your API Key is correct!'
+            status = 'Error'
+            title = msg
           else
             msg = error
+            status = 'Error'
+            title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
 
-          statusBarTileView.setStatus('Error')
           console.warn msg
-          statusBarTileView.setTitle(msg)
+          statusBarTileView.setStatus(status)
+          statusBarTileView.setTitle(title)
+
         else
-          statusBarTileView.setStatus('Active')
+          statusBarTileView.setStatus()
           today = new Date()
-          statusBarTileView.setTitle('Last heartbeat sent at ' + formatDate(today))
+          statusBarTileView.setTitle('Last heartbeat sent ' + formatDate(today))
       )
       lastHeartbeat = time
       lastFile = file.path

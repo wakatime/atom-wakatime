@@ -2,10 +2,14 @@
 path = require 'path'
 
 class StatusBarTileView extends HTMLElement
-  prepend: 'WakaTime '
 
   init: ->
     @classList.add('wakatime-status-bar-tile', 'inline-block')
+
+    @link = document.createElement('a')
+    @link.classList.add('inline-block')
+    @link.href = 'https://wakatime.com/'
+    @appendChild @link
 
     @icon = document.createElement('img')
     @icon.classList.add('inline-block')
@@ -14,17 +18,20 @@ class StatusBarTileView extends HTMLElement
     @icon.style.height = '1.4555em'
     @icon.style.verticalAlign = 'middle'
     @icon.style.marginRight = '0.3em'
-    @appendChild @icon
+    @link.appendChild @icon
 
-    @msg = document.createElement('a')
+    @msg = document.createElement('span')
     @msg.classList.add('inline-block')
-    @msg.href = 'https://wakatime.com/dashboard'
-    @appendChild @msg
+    @link.appendChild @msg
 
     @setStatus "initializing..."
 
+  destroy: ->
+    @tooltip?.dispose()
+    @classList = ''
+
   setStatus: (content) ->
-    @msg?.textContent = @prepend + content
+    @msg?.textContent = content or ''
 
   setTitle: (text) ->
     @tooltip?.dispose()
