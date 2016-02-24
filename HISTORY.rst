@@ -3,6 +3,12 @@ History
 -------
 
 
+5.0.6 (2016-02-24)
+++++++++++++++++++
+
+- randomize status bar element name to prevent conflicts if package reloaded
+
+
 5.0.5 (2016-02-24)
 ++++++++++++++++++
 
