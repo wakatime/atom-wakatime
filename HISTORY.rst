@@ -3,6 +3,12 @@ History
 -------
 
 
+5.0.5 (2016-02-24)
+++++++++++++++++++
+
+- shorten status bar text unless there was an error to display
+
+
 5.0.4 (2016-02-23)
 ++++++++++++++++++
 
