@@ -9,6 +9,13 @@
   "engines": {
     "atom": ">0.50.0"
   },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
+  },
   "dependencies": {
     "adm-zip": "0.4.7",
     "ini": "^1.3.4",

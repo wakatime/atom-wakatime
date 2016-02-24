@@ -12,6 +12,8 @@ unloadHandler = null
 lastHeartbeat = 0
 lastFile = ''
 apiKey = null
+statusBarTileView = null
+pluginReady = false
 
 # package dependencies
 AdmZip = require 'adm-zip'
@@ -22,6 +24,8 @@ execFile = require('child_process').execFile
 request = require 'request'
 rimraf = require 'rimraf'
 ini = require 'ini'
+
+StatusBarTileView = require './status-bar-tile-view'
 
 module.exports =
   config:
@@ -66,6 +70,20 @@ module.exports =
     cleanupOnUninstall()
     setupEventHandlers()
     setApiKey()
+    pluginReady = true
+    statusBarTileView?.setStatus('ready')
+
+  consumeStatusBar: (statusBar) ->
+    statusBarTileView = new StatusBarTileView()
+    statusBarTileView.init()
+    @statusBarTile = statusBar.addLeftTile(item: statusBarTileView, priority: 100)
+    if pluginReady
+      statusBarTileView.setStatus('ready')
+
+  deactivate: ->
+    @statusBarTile?.destroy()
+    statusBarTileView = null
+
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
@@ -318,11 +336,19 @@ sendHeartbeat = (file, lineno, isWrite) ->
           if stdout? and stdout != ''
             console.warn stdout
           if proc.exitCode == 102
-            console.warn 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
+            msg = 'Warning: api error (102); Check your ~/.wakatime.log file for more details.'
           else if proc.exitCode == 103
-            console.warn 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
+            msg = 'Warning: config parsing error (103); Check your ~/.wakatime.log file for more details.'
           else
-            console.warn error
+            msg = error
+
+          statusBarTileView.setStatus('Error')
+          console.warn msg
+          statusBarTileView.setTitle(msg)
+        else
+          statusBarTileView.setStatus('Active')
+          today = new Date()
+          statusBarTileView.setTitle('Last heartbeat sent at ' + formatDate(today))
       )
       lastHeartbeat = time
       lastFile = file.path
@@ -343,3 +369,30 @@ endsWith = (str, suffix) ->
   if str? and suffix?
     return str.indexOf(suffix, str.length - suffix.length) != -1
   return false
+
+formatDate = (date) ->
+  months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+  ]
+  ampm = 'AM'
+  hour = date.getHours()
+  if (hour > 11)
+      ampm = 'PM'
+      hour = hour - 12
+  if (hour == 0)
+      hour = 12
+  minute = date.getMinutes()
+  if (minute < 10)
+    minute = '0' + minute
+  return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' ' + hour + ':' + minute + ' ' + ampm
