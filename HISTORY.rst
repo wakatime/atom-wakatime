@@ -3,6 +3,12 @@ History
 -------
 
 
+5.0.8 (2016-02-24)
+++++++++++++++++++
+
+- fix bug in status bar element registration
+
+
 5.0.7 (2016-02-24)
 ++++++++++++++++++
 
