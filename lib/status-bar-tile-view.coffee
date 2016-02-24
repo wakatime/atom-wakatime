@@ -38,4 +38,4 @@ class StatusBarTileView extends HTMLElement
     @tooltip = atom.tooltips.add this,
       title: text
 
-module.exports = document.registerElement('wakatime-status-bar-tile', prototype: StatusBarTileView.prototype, extends: 'div')
+module.exports = document.registerElement('wakatime-status-bar-tile' + Date.now(), prototype: StatusBarTileView.prototype, extends: 'div')
