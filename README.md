@@ -25,7 +25,7 @@ Installation
 Screen Shots
 ------------
 
-![Project Overview](https://wakatime.com/static/img/ScreenShots/ScreenShot-2014-10-29.png)
+![Project Overview](https://cloud.githubusercontent.com/assets/2073557/13750295/9ffcb6de-e9e3-11e5-8473-5d764f2458ec.png)
 
 
 Configuring
