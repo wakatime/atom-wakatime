@@ -43,6 +43,9 @@ module.exports =
       items:
         type: 'string'
       order: 2
+    statusBarIcon:
+      type: 'boolean'
+      default: true
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
@@ -75,12 +78,13 @@ module.exports =
     statusBarTileView?.setStatus()
 
   consumeStatusBar: (statusBar) ->
-    statusBarTileView = new StatusBarTileView()
-    statusBarTileView.init()
-    @statusBarTile = statusBar.addRightTile(item: statusBarTileView, priority: 300)
-    if pluginReady
-      statusBarTileView.setTitle('WakaTime initialized')
-      statusBarTileView.setStatus()
+    if atom.config.get 'wakatime.statusBarIcon'
+      statusBarTileView = new StatusBarTileView()
+      statusBarTileView.init()
+      @statusBarTile = statusBar.addRightTile(item: statusBarTileView, priority: 300)
+      if pluginReady
+        statusBarTileView.setTitle('WakaTime initialized')
+        statusBarTileView.setStatus()
 
   deactivate: ->
     @statusBarTile?.destroy()
