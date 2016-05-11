@@ -43,6 +43,12 @@ module.exports =
       items:
         type: 'string'
       order: 2
+    showStatusBarIcon:
+      title: 'Show WakaTime in Atom status bar'
+      description: 'Add an icon to Atom\'s status bar with WakaTime info. Hovering over the icon shows current WakaTime status or error message.'
+      type: 'boolean'
+      default: true
+      order: 3
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
@@ -73,20 +79,28 @@ module.exports =
     pluginReady = true
     statusBarTileView?.setTitle('WakaTime initialized')
     statusBarTileView?.setStatus()
+    @settingChangedObserver = atom.config.observe 'wakatime', @settingChangedHandler
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
     statusBarTileView.init()
-    @statusBarTile = statusBar.addRightTile(item: statusBarTileView, priority: 300)
+    @statusBarTile = statusBar?.addRightTile(item: statusBarTileView, priority: 300)
     if pluginReady
       statusBarTileView.setTitle('WakaTime initialized')
       statusBarTileView.setStatus()
+      if not atom.config.get 'wakatime.showStatusBarIcon'
+        statusBarTileView?.hide()
 
   deactivate: ->
     @statusBarTile?.destroy()
     statusBarTileView?.destroy()
-    statusBarTileView = null
-
+    @settingChangedObserver?.dispose()
+  
+  settingChangedHandler: (newValue) ->
+    if newValue.showStatusBarIcon
+      statusBarTileView?.show()
+    else
+      statusBarTileView?.hide()
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''

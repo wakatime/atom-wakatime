@@ -28,6 +28,14 @@ class StatusBarTileView extends HTMLElement
 
     @setStatus "initializing..."
 
+  show: ->
+    @classList.add(element_name, 'inline-block')
+    @classList.remove(element_name, 'hidden')
+
+  hide: ->
+    @classList.remove(element_name, 'inline-block')
+    @classList.add(element_name, 'hidden')
+
   destroy: ->
     @tooltip?.dispose()
     @classList = ''
