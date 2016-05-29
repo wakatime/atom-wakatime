@@ -1,6 +1,6 @@
 {
   "name": "wakatime",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "description": "Fitbit for programmers. Get automated metrics and insights about your programming.",
   "license": "BSD",
   "repository": "https://github.com/wakatime/atom-wakatime",
