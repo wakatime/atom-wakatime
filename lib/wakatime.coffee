@@ -11,7 +11,6 @@ packageVersion = null
 unloadHandler = null
 lastHeartbeat = 0
 lastFile = ''
-apiKey = null
 statusBarTileView = null
 pluginReady = false
 
@@ -75,8 +74,7 @@ module.exports =
     )
     cleanupOnUninstall()
     setupEventHandlers()
-    setApiKey()
-    pluginReady = true
+    setupConfigs()
     statusBarTileView?.setTitle('WakaTime initialized')
     statusBarTileView?.setStatus()
     @settingChangedObserver = atom.config.observe 'wakatime', @settingChangedHandler
@@ -96,34 +94,82 @@ module.exports =
     statusBarTileView?.destroy()
     @settingChangedObserver?.dispose()
   
-  settingChangedHandler: (newValue) ->
-    if newValue.showStatusBarIcon
+  settingChangedHandler: (settings) ->
+    if settings.showStatusBarIcon
       statusBarTileView?.show()
     else
       statusBarTileView?.hide()
+    if pluginReady
+      apiKey = settings.apikey
+      if isValidApiKey(apiKey)
+        atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
+        atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+        saveApiKey apiKey
+
+saveApiKey = (apiKey) ->
+  configFile = path.join getUserHome(), '.wakatime.cfg'
+  fs.readFile configFile, 'utf-8', (err, inp) ->
+    if err?
+      console.warn 'Error: could not read wakatime config file'
+      inp = ''
+    String::startsWith ?= (s) -> @slice(0, s.length) == s
+    String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
+    contents = []
+    currentSection = ''
+    found = false
+    for line in inp.split('\n')
+      if line.trim().startsWith('[') and line.trim().endsWith(']')
+        if currentSection == 'settings' and not found
+          contents.push('api_key = ' + apiKey)
+          found = true
+        currentSection = line.trim().substring(1, line.trim().length - 1).toLowerCase()
+        contents.push(line)
+      else if currentSection == 'settings'
+        parts = line.split('=')
+        currentKey = parts[0].trim()
+        if currentKey == 'api_key'
+          if not found
+            contents.push('api_key = ' + apiKey)
+            found = true
+        else
+          contents.push(line)
+      else
+        contents.push(line)
+
+    if not found
+      if currentSection != 'settings'
+        contents.push('[settings]')
+      contents.push('api_key = ' + apiKey)
+
+    fs.writeFile configFile, contents.join('\n'), {encoding: 'utf-8'}, (err2) ->
+      if err2?
+        msg = 'Error: could not write to wakatime config file'
+        console.error msg
+        statusBarTileView?.setStatus('Error')
+        statusBarTileView?.setTitle(msg)
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
 
-setApiKey = ->
-  loadApiKey (err, key) ->
-    if err
-      console.log err.message
-    else
-      apiKey = key
+setupConfigs = ->
+  configFile = path.join getUserHome(), '.wakatime.cfg'
+  fs.readFile configFile, 'utf-8', (err, configContent) ->
+    pluginReady = true
+    if err?
+      console.log 'Error: could not read wakatime config file'
+      return
+    commonConfigs = ini.decode configContent
+    if commonConfigs? and commonConfigs.settings?
+      atomConfigs = atom.config.get('wakatime')
+      atomConfigs.apikey = commonConfigs.settings.api_key
+      atomConfigs.debug = not not commonConfigs.settings.debug
+      atom.config.set 'wakatime', atomConfigs
 
-loadApiKey = (cb) ->
-  key = atom.config.get('wakatime.apikey')
-  return cb(null, key) if key? && key.length > 0
-  wakatimeConfigFile = path.join getUserHome(), '.wakatime.cfg'
-  fs.readFile wakatimeConfigFile, 'utf-8', (err, configContent) ->
-    return cb(new Error('could not read wakatime config')) if err?
-    wakatimeConfig = ini.parse configContent
-    key = wakatimeConfig?.settings?.api_key
-    if key?
-      cb null, key
-    else
-      cb new Error('wakatime key not found')
+isValidApiKey = (key) ->
+  if not key?
+    return false
+  re = new RegExp('^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$', 'i')
+  return re.test key
 
 enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
@@ -329,8 +375,8 @@ sendHeartbeat = (file, lineno, isWrite) ->
   currentFile = file.path
   if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
     pythonLocation (python) ->
-      return unless python? && apiKey?
-      args = [cliLocation(), '--file', currentFile, '--key', apiKey, '--plugin', 'atom-wakatime/' + packageVersion]
+      return unless python?
+      args = [cliLocation(), '--file', currentFile, '--plugin', 'atom-wakatime/' + packageVersion]
       if isWrite
         args.push('--write')
       if lineno?
