@@ -250,7 +250,7 @@ pythonLocation = (callback, locations) ->
 
 installPython = () ->
   if os.type() is 'Windows_NT'
-    pyVer = '3.5.0'
+    pyVer = '3.5.1'
     arch = 'win32'
     if os.arch().indexOf('x64') > -1
       arch = 'amd64'
