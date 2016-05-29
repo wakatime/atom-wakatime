@@ -3,6 +3,13 @@ History
 -------
 
 
+5.0.9 (2016-05-29)
+++++++++++++++++++
+
+- Store api key in common ~/.wakatime.cfg config file to prevent leaking it
+  when reporting errors to GitHub issues.
+
+
 5.0.8 (2016-02-24)
 ++++++++++++++++++
 
