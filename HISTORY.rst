@@ -3,6 +3,13 @@ History
 -------
 
 
+5.0.11 (2016-05-29)
+++++++++++++++++++
+
+- Fix bug causing api key to be loaded from common config into Atom's config 
+  when starting up.
+
+
 5.0.10 (2016-05-29)
 ++++++++++++++++++
 
