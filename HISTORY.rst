@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.0 (2016-05-29)
+++++++++++++++++++
+
+- For backwards compatibility when upgrading, save api key from Atom to config
+  file on startup.
+
+
 5.0.11 (2016-05-29)
 ++++++++++++++++++
 
