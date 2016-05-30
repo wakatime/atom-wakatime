@@ -77,7 +77,7 @@ module.exports =
     setupConfigs()
     statusBarTileView?.setTitle('WakaTime initialized')
     statusBarTileView?.setStatus()
-    @settingChangedObserver = atom.config.observe 'wakatime', @settingChangedHandler
+    @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
@@ -94,47 +94,47 @@ module.exports =
     statusBarTileView?.destroy()
     @settingChangedObserver?.dispose()
   
-  settingChangedHandler: (settings) ->
-    if settings.showStatusBarIcon
-      statusBarTileView?.show()
-    else
-      statusBarTileView?.hide()
-    if pluginReady
-      apiKey = settings.apikey
-      if isValidApiKey(apiKey)
-        atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
-        atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
-        saveApiKey apiKey
+settingChangedHandler = (settings) ->
+  if settings.showStatusBarIcon
+    statusBarTileView?.show()
+  else
+    statusBarTileView?.hide()
+  if pluginReady
+    apiKey = settings.apikey
+    if isValidApiKey(apiKey)
+      atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
+      atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+      saveApiKey apiKey
 
 saveApiKey = (apiKey) ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
   fs.readFile configFile, 'utf-8', (err, inp) ->
     if err?
-      console.warn 'Error: could not read wakatime config file'
-      inp = ''
+      console.log 'Error: could not read wakatime config file'
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
     contents = []
     currentSection = ''
     found = false
-    for line in inp.split('\n')
-      if line.trim().startsWith('[') and line.trim().endsWith(']')
-        if currentSection == 'settings' and not found
-          contents.push('api_key = ' + apiKey)
-          found = true
-        currentSection = line.trim().substring(1, line.trim().length - 1).toLowerCase()
-        contents.push(line)
-      else if currentSection == 'settings'
-        parts = line.split('=')
-        currentKey = parts[0].trim()
-        if currentKey == 'api_key'
-          if not found
+    if inp?
+      for line in inp.split('\n')
+        if line.trim().startsWith('[') and line.trim().endsWith(']')
+          if currentSection == 'settings' and not found
             contents.push('api_key = ' + apiKey)
             found = true
+          currentSection = line.trim().substring(1, line.trim().length - 1).toLowerCase()
+          contents.push(line)
+        else if currentSection == 'settings'
+          parts = line.split('=')
+          currentKey = parts[0].trim()
+          if currentKey == 'api_key'
+            if not found
+              contents.push('api_key = ' + apiKey)
+              found = true
+          else
+            contents.push(line)
         else
           contents.push(line)
-      else
-        contents.push(line)
 
     if not found
       if currentSection != 'settings'
@@ -157,11 +157,14 @@ setupConfigs = ->
     pluginReady = true
     if err?
       console.log 'Error: could not read wakatime config file'
+      settingChangedHandler atom.config.get('wakatime')
       return
     commonConfigs = ini.decode configContent
     if commonConfigs? and commonConfigs.settings? and isValidApiKey(commonConfigs.settings.api_key)
       atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
       atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+    else
+      settingChangedHandler atom.config.get('wakatime')
 
 isValidApiKey = (key) ->
   if not key?
