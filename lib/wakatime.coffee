@@ -159,11 +159,9 @@ setupConfigs = ->
       console.log 'Error: could not read wakatime config file'
       return
     commonConfigs = ini.decode configContent
-    if commonConfigs? and commonConfigs.settings?
-      atomConfigs = atom.config.get('wakatime')
-      atomConfigs.apikey = commonConfigs.settings.api_key
-      atomConfigs.debug = not not commonConfigs.settings.debug
-      atom.config.set 'wakatime', atomConfigs
+    if commonConfigs? and commonConfigs.settings? and isValidApiKey(commonConfigs.settings.api_key)
+      atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
+      atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
 
 isValidApiKey = (key) ->
   if not key?
