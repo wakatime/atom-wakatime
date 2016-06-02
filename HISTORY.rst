@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.1 (2016-06-02)
+++++++++++++++++++
+
+- Fix debug setting.
+- Improve messaging in status bar while plugin initializing.
+
+
 6.0.0 (2016-05-29)
 ++++++++++++++++++
 
