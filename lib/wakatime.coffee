@@ -8,7 +8,6 @@ Website:     https://wakatime.com/
 
 # package-global attributes
 packageVersion = null
-unloadHandler = null
 lastHeartbeat = 0
 lastFile = ''
 statusBarTileView = null
@@ -51,7 +50,6 @@ module.exports =
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
-    cleanupOnUninstall()
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
@@ -183,18 +181,6 @@ isValidApiKey = (key) ->
 
 enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
-
-cleanupOnUninstall = () ->
-  if unloadHandler?
-    unloadHandler.dispose()
-    unloadHandler = null
-  unloadHandler = atom.packages.onDidUnloadPackage((p) ->
-    if p? and p.name == 'wakatime'
-      removeCLI()
-      if unloadHandler?
-        unloadHandler.dispose()
-        unloadHandler = null
-  )
 
 setupEventHandlers = (callback) ->
   atom.workspace.observeTextEditors (editor) =>
