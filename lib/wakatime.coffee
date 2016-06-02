@@ -51,40 +51,45 @@ module.exports =
 
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
+    cleanupOnUninstall()
+    setupConfigs()
+    @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
-    if not isCLIInstalled()
-      installCLI(->
-        console.log 'Finished installing wakatime cli.'
-      )
-    else
-      isCLILatest((latest) ->
-        if not latest
-          installCLI(->
-            console.log 'Finished installing wakatime cli.'
-          )
-      )
     isPythonInstalled((installed) ->
       if not installed
-        atom.confirm
-          message: 'WakaTime requires Python'
-          detailedMessage: 'Let\'s download and install Python now?'
-          buttons:
-            OK: -> installPython()
-            Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+        if os.type() is 'Windows_NT'
+          atom.confirm
+            message: 'WakaTime requires Python'
+            detailedMessage: 'Let\'s download and install Python now?'
+            buttons:
+              OK: -> installPython(finishActivation)
+              Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+        else
+          window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+      else
+        if not isCLIInstalled()
+          installCLI(->
+            console.log 'Finished installing wakatime cli.'
+            finishActivation()
+          )
+        else
+          isCLILatest((latest) ->
+            if not latest
+              installCLI(->
+                console.log 'Finished installing wakatime cli.'
+                finishActivation()
+              )
+            else
+              finishActivation()
+          )
     )
-    cleanupOnUninstall()
-    setupEventHandlers()
-    setupConfigs()
-    statusBarTileView?.setTitle('WakaTime initialized')
-    statusBarTileView?.setStatus()
-    @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
     statusBarTileView.init()
     @statusBarTile = statusBar?.addRightTile(item: statusBarTileView, priority: 300)
     if pluginReady
-      statusBarTileView.setTitle('WakaTime initialized')
+      statusBarTileView.setTitle('WakaTime ready')
       statusBarTileView.setStatus()
       if not atom.config.get 'wakatime.showStatusBarIcon'
         statusBarTileView?.hide()
@@ -93,18 +98,23 @@ module.exports =
     @statusBarTile?.destroy()
     statusBarTileView?.destroy()
     @settingChangedObserver?.dispose()
+
+finishActivation = () ->
+  pluginReady = true
+  setupEventHandlers()
+  statusBarTileView?.setTitle('WakaTime ready')
+  statusBarTileView?.setStatus()
   
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
     statusBarTileView?.show()
   else
     statusBarTileView?.hide()
-  if pluginReady
-    apiKey = settings.apikey
-    if isValidApiKey(apiKey)
-      atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
-      atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
-      saveApiKey apiKey
+  apiKey = settings.apikey
+  if isValidApiKey(apiKey)
+    atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
+    atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+    saveApiKey apiKey
 
 saveApiKey = (apiKey) ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
@@ -154,7 +164,6 @@ getUserHome = ->
 setupConfigs = ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
   fs.readFile configFile, 'utf-8', (err, configContent) ->
-    pluginReady = true
     if err?
       console.log 'Error: could not read wakatime config file'
       settingChangedHandler atom.config.get('wakatime')
@@ -187,7 +196,7 @@ cleanupOnUninstall = () ->
         unloadHandler = null
   )
 
-setupEventHandlers = () ->
+setupEventHandlers = (callback) ->
   atom.workspace.observeTextEditors (editor) =>
     try
       buffer = editor.getBuffer()
@@ -212,6 +221,8 @@ setupEventHandlers = () ->
           if editor.cursors.length > 0
             lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
           sendHeartbeat(file, lineno)
+    if callback?
+      callback()
 
 isPythonInstalled = (callback) ->
   pythonLocation((result) ->
@@ -249,26 +260,29 @@ pythonLocation = (callback, locations) ->
         pythonLocation(callback, locations)
     )
 
-installPython = () ->
-  if os.type() is 'Windows_NT'
-    pyVer = '3.5.1'
-    arch = 'win32'
-    if os.arch().indexOf('x64') > -1
-      arch = 'amd64'
-    url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
+installPython = (callback) ->
+  pyVer = '3.5.1'
+  arch = 'win32'
+  if os.arch().indexOf('x64') > -1
+    arch = 'amd64'
+  url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
 
-    console.log 'Downloading python...'
-    zipFile = __dirname + path.sep + 'python.zip'
-    downloadFile(url, zipFile, ->
+  console.log 'downloading python...'
+  statusBarTileView?.setStatus('downloading python...')
 
-      console.log 'Extracting python...'
-      unzip(zipFile, __dirname + path.sep + 'python', ->
-          fs.unlink(zipFile)
-          console.log 'Finished installing python.'
-      )
+  zipFile = __dirname + path.sep + 'python.zip'
+  downloadFile(url, zipFile, ->
+
+    console.log 'extracting python...'
+    statusBarTileView?.setStatus('extracting python...')
+
+    unzip(zipFile, __dirname + path.sep + 'python', ->
+        fs.unlink(zipFile)
+        console.log 'Finished installing python.'
+        if callback?
+          callback()
     )
-  else
-    window.alert('WakaTime depends on Python. Install it from https://python.org/downloads then restart Atom.')
+  )
 
 isCLIInstalled = () ->
   return fs.existsSync(cliLocation())
@@ -318,6 +332,7 @@ cliLocation = () ->
 
 installCLI = (callback) ->
   console.log 'Downloading wakatime cli...'
+  statusBarTileView?.setStatus('downloading wakatime-cli...')
   url = 'https://github.com/wakatime/wakatime/archive/master.zip'
   zipFile = __dirname + path.sep + 'wakatime-master.zip'
   downloadFile(url, zipFile, ->
@@ -326,6 +341,7 @@ installCLI = (callback) ->
 
 extractCLI = (zipFile, callback) ->
   console.log 'Extracting wakatime-master.zip file...'
+  statusBarTileView?.setStatus('extracting wakatime-cli...')
   removeCLI(->
     unzip(zipFile, __dirname, callback)
   )
@@ -383,6 +399,8 @@ sendHeartbeat = (file, lineno, isWrite) ->
       if lineno?
         args.push('--lineno')
         args.push(lineno)
+      if atom.config.get 'wakatime.debug'
+        args.push('--verbose')
 
       if atom.project.contains(file.path)
         currentFile = file.path
@@ -416,7 +434,8 @@ sendHeartbeat = (file, lineno, isWrite) ->
             status = 'Error'
             title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
 
-          console.warn msg
+          if msg?
+            console.warn msg
           statusBarTileView?.setStatus(status)
           statusBarTileView?.setTitle(title)
 
