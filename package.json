@@ -1,14 +1,8 @@
 {
   "name": "wakatime",
-  "version": "6.0.2",
   "description": "Fitbit for programmers. Get automated metrics and insights about your programming.",
-  "license": "BSD",
-  "repository": "https://github.com/wakatime/atom-wakatime",
+  "version": "6.0.2",
   "author": "WakaTime <support@wakatime.com>",
-  "main": "./lib/wakatime",
-  "engines": {
-    "atom": ">0.50.0"
-  },
   "consumedServices": {
     "status-bar": {
       "versions": {
@@ -21,5 +15,11 @@
     "ini": "^1.3.4",
     "request": "2.61.0",
     "rimraf": "2.4.3"
-  }
+  },
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "license": "BSD-3-Clause",
+  "main": "./lib/wakatime",
+  "repository": "https://github.com/wakatime/atom-wakatime"
 }
