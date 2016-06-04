@@ -26,28 +26,6 @@ ini = require 'ini'
 StatusBarTileView = require './status-bar-tile-view'
 
 module.exports =
-  config:
-    apikey:
-      title: 'Api Key'
-      description: 'Your secret key from https://wakatime.com/settings.'
-      type: 'string'
-      default: ''
-      order: 1
-    ignore:
-      title: 'Exclude File Paths'
-      description: 'Exclude these file paths from logging; POSIX regex patterns'
-      type: 'array'
-      default: ['^/var/', '^/tmp/', '^/private/', 'COMMIT_EDITMSG$', 'PULLREQ_EDITMSG$', 'MERGE_MSG$']
-      items:
-        type: 'string'
-      order: 2
-    showStatusBarIcon:
-      title: 'Show WakaTime in Atom status bar'
-      description: 'Add an icon to Atom\'s status bar with WakaTime info. Hovering over the icon shows current WakaTime status or error message.'
-      type: 'boolean'
-      default: true
-      order: 3
-
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
     setupConfigs()
