@@ -241,10 +241,10 @@ installPython = (callback) ->
     statusBarTileView?.setStatus('extracting python...')
 
     unzip(zipFile, __dirname + path.sep + 'python', ->
-        fs.unlink(zipFile)
-        console.log 'Finished installing python.'
-        if callback?
-          callback()
+      fs.unlink(zipFile)
+      console.log 'Finished installing python.'
+      if callback?
+        callback()
     )
   )
 
@@ -446,10 +446,10 @@ formatDate = (date) ->
   ampm = 'AM'
   hour = date.getHours()
   if (hour > 11)
-      ampm = 'PM'
-      hour = hour - 12
+    ampm = 'PM'
+    hour = hour - 12
   if (hour == 0)
-      hour = 12
+    hour = 12
   minute = date.getMinutes()
   if (minute < 10)
     minute = '0' + minute
