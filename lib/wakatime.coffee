@@ -80,7 +80,7 @@ finishActivation = () ->
   setupEventHandlers()
   statusBarTileView?.setTitle('WakaTime ready')
   statusBarTileView?.setStatus()
-  
+
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
     statusBarTileView?.show()
