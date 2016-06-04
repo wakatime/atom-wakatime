@@ -26,28 +26,6 @@ ini = require 'ini'
 StatusBarTileView = require './status-bar-tile-view'
 
 module.exports =
-  config:
-    apikey:
-      title: 'Api Key'
-      description: 'Your secret key from https://wakatime.com/settings.'
-      type: 'string'
-      default: ''
-      order: 1
-    ignore:
-      title: 'Exclude File Paths'
-      description: 'Exclude these file paths from logging; POSIX regex patterns'
-      type: 'array'
-      default: ['^/var/', '^/tmp/', '^/private/', 'COMMIT_EDITMSG$', 'PULLREQ_EDITMSG$', 'MERGE_MSG$']
-      items:
-        type: 'string'
-      order: 2
-    showStatusBarIcon:
-      title: 'Show WakaTime in Atom status bar'
-      description: 'Add an icon to Atom\'s status bar with WakaTime info. Hovering over the icon shows current WakaTime status or error message.'
-      type: 'boolean'
-      default: true
-      order: 3
-
   activate: (state) ->
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
     setupConfigs()
@@ -102,7 +80,7 @@ finishActivation = () ->
   setupEventHandlers()
   statusBarTileView?.setTitle('WakaTime ready')
   statusBarTileView?.setStatus()
-  
+
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
     statusBarTileView?.show()
@@ -183,24 +161,24 @@ enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
 
 setupEventHandlers = (callback) ->
-  atom.workspace.observeTextEditors (editor) =>
+  atom.workspace.observeTextEditors (editor) ->
     try
       buffer = editor.getBuffer()
-      buffer.onDidSave (e) =>
+      buffer.onDidSave (e) ->
         file = buffer.file
         if file? and file
           lineno = null
           if editor.cursors.length > 0
             lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
           sendHeartbeat(file, lineno, true)
-      buffer.onDidChange (e) =>
+      buffer.onDidChange (e) ->
         file = buffer.file
         if file? and file
           lineno = null
           if editor.cursors.length > 0
             lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
           sendHeartbeat(file, lineno)
-      editor.onDidChangeCursorPosition (e) =>
+      editor.onDidChangeCursorPosition (e) ->
         file = buffer.file
         if file? and file
           lineno = null
@@ -263,10 +241,10 @@ installPython = (callback) ->
     statusBarTileView?.setStatus('extracting python...')
 
     unzip(zipFile, __dirname + path.sep + 'python', ->
-        fs.unlink(zipFile)
-        console.log 'Finished installing python.'
-        if callback?
-          callback()
+      fs.unlink(zipFile)
+      console.log 'Finished installing python.'
+      if callback?
+        callback()
     )
   )
 
@@ -468,10 +446,10 @@ formatDate = (date) ->
   ampm = 'AM'
   hour = date.getHours()
   if (hour > 11)
-      ampm = 'PM'
-      hour = hour - 12
+    ampm = 'PM'
+    hour = hour - 12
   if (hour == 0)
-      hour = 12
+    hour = 12
   minute = date.getMinutes()
   if (minute < 10)
     minute = '0' + minute

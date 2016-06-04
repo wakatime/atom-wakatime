@@ -1,13 +1,40 @@
 {
   "name": "wakatime",
-  "version": "6.0.2",
   "description": "Fitbit for programmers. Get automated metrics and insights about your programming.",
-  "license": "BSD",
-  "repository": "https://github.com/wakatime/atom-wakatime",
+  "version": "6.0.2",
   "author": "WakaTime <support@wakatime.com>",
-  "main": "./lib/wakatime",
-  "engines": {
-    "atom": ">0.50.0"
+  "configSchema": {
+    "apikey": {
+      "title": "Api Key",
+      "description": "Your secret key from https://wakatime.com/settings.",
+      "type": "string",
+      "default": "",
+      "order": 1
+    },
+    "ignore": {
+      "title": "Exclude File Paths",
+      "description": "Exclude these file paths from logging; POSIX regex patterns",
+      "type": "array",
+      "default": [
+        "^/var/",
+        "^/tmp/",
+        "^/private/",
+        "COMMIT_EDITMSG$",
+        "PULLREQ_EDITMSG$",
+        "MERGE_MSG$"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "order": 2
+    },
+    "showStatusBarIcon": {
+      "title": "Show WakaTime in Atom status bar",
+      "description": "Add an icon to Atom's status bar with WakaTime info. Hovering over the icon shows current WakaTime status or error message.",
+      "type": "boolean",
+      "default": true,
+      "order": 3
+    }
   },
   "consumedServices": {
     "status-bar": {
@@ -21,5 +48,11 @@
     "ini": "^1.3.4",
     "request": "2.61.0",
     "rimraf": "2.4.3"
-  }
+  },
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "license": "BSD-3-Clause",
+  "main": "./lib/wakatime",
+  "repository": "https://github.com/wakatime/atom-wakatime"
 }
