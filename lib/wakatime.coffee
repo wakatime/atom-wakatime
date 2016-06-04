@@ -161,24 +161,24 @@ enoughTimePassed = (time) ->
   return lastHeartbeat + 120000 < time
 
 setupEventHandlers = (callback) ->
-  atom.workspace.observeTextEditors (editor) =>
+  atom.workspace.observeTextEditors (editor) ->
     try
       buffer = editor.getBuffer()
-      buffer.onDidSave (e) =>
+      buffer.onDidSave (e) ->
         file = buffer.file
         if file? and file
           lineno = null
           if editor.cursors.length > 0
             lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
           sendHeartbeat(file, lineno, true)
-      buffer.onDidChange (e) =>
+      buffer.onDidChange (e) ->
         file = buffer.file
         if file? and file
           lineno = null
           if editor.cursors.length > 0
             lineno = editor.cursors[0].getCurrentLineBufferRange().end.row + 1
           sendHeartbeat(file, lineno)
-      editor.onDidChangeCursorPosition (e) =>
+      editor.onDidChangeCursorPosition (e) ->
         file = buffer.file
         if file? and file
           lineno = null
