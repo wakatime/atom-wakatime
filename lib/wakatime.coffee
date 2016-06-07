@@ -33,6 +33,7 @@ module.exports =
     if atom.config.get 'wakatime.debug'
       log.setLevel('DEBUG')
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
+    log.debug 'Initializing WakaTime v' + packageVersion + '...'
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
