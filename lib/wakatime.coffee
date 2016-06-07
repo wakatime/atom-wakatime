@@ -275,14 +275,22 @@ isCLILatest = (callback) ->
               if callback?
                 callback(true)
             else
-              log.debug 'Found an updated wakatime-cli v' + latestVersion
-              if callback?
-                callback(false)
+              if latestVersion?
+                log.debug 'Found an updated wakatime-cli v' + latestVersion
+                if callback?
+                  callback(false)
+              else
+                log.debug 'Unable to find latest wakatime-cli version from GitHub.'
+                if callback?
+                  callback(true)
           )
         else
           if callback?
             callback(false)
       )
+    else
+      if callback?
+        callback(false)
   )
 
 getLatestCliVersion = (callback) ->
