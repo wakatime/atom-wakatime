@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.4 (2016-06-07)
+++++++++++++++++++
+
+- Prevent checking for wakatime-cli updates when offline.
+- Only check for wakatime-cli updates once every 24 hours. Fixes #37.
+
+
 6.0.3 (2016-06-07)
 ++++++++++++++++++
 
