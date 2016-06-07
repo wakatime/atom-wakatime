@@ -3,6 +3,12 @@ History
 -------
 
 
+6.0.3 (2016-06-07)
+++++++++++++++++++
+
+- Hide console.log messages unless Debug setting is checked.
+
+
 6.0.2 (2016-06-02)
 ++++++++++++++++++
 
