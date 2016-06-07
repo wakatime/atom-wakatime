@@ -37,34 +37,43 @@ module.exports =
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
-    isPythonInstalled((installed) ->
-      if not installed
-        if os.type() is 'Windows_NT'
-          atom.confirm
-            message: 'WakaTime requires Python'
-            detailedMessage: 'Let\'s download and install Python now?'
-            buttons:
-              OK: -> installPython(finishActivation)
-              Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+    lastInit = atom.config.get 'wakatime-hidden.lastInit'
+    currentTime = Math.round (new Date).getTime() / 1000
+
+    hours = 24
+    if not lastInit? or parseInt(lastInit, 10) + 3600 * hours < currentTime
+      atom.config.set 'wakatime-hidden.lastInit', currentTime
+
+      isPythonInstalled((installed) ->
+        if not installed
+          if os.type() is 'Windows_NT'
+            atom.confirm
+              message: 'WakaTime requires Python'
+              detailedMessage: 'Let\'s download and install Python now?'
+              buttons:
+                OK: -> installPython(finishActivation)
+                Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+          else
+            window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
         else
-          window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
-      else
-        if not isCLIInstalled()
-          installCLI(->
-            log.debug 'Finished installing wakatime cli.'
-            finishActivation()
-          )
-        else
-          isCLILatest((latest) ->
-            if not latest
-              installCLI(->
-                log.debug 'Finished installing wakatime cli.'
-                finishActivation()
-              )
-            else
+          if not isCLIInstalled()
+            installCLI(->
+              log.debug 'Finished installing wakatime cli.'
               finishActivation()
-          )
-    )
+            )
+          else
+            isCLILatest((latest) ->
+              if not latest
+                installCLI(->
+                  log.debug 'Finished installing wakatime cli.'
+                  finishActivation()
+                )
+              else
+                finishActivation()
+            )
+      )
+    else
+      finishActivation()
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
@@ -86,6 +95,7 @@ finishActivation = () ->
   setupEventHandlers()
   statusBarTileView?.setTitle('WakaTime ready')
   statusBarTileView?.setStatus()
+  log.debug 'Finished initializing WakaTime'
 
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
