@@ -7,6 +7,7 @@ Website:     https://wakatime.com/
 ###
 
 # package-global attributes
+log = null
 packageVersion = null
 lastHeartbeat = 0
 lastFile = ''
@@ -24,9 +25,13 @@ rimraf = require 'rimraf'
 ini = require 'ini'
 
 StatusBarTileView = require './status-bar-tile-view'
+Logger = require './logger'
 
 module.exports =
   activate: (state) ->
+    log = new Logger('WakaTime')
+    if atom.config.get 'wakatime.debug'
+      log.setLevel('DEBUG')
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
@@ -45,14 +50,14 @@ module.exports =
       else
         if not isCLIInstalled()
           installCLI(->
-            console.log 'Finished installing wakatime cli.'
+            log.debug 'Finished installing wakatime cli.'
             finishActivation()
           )
         else
           isCLILatest((latest) ->
             if not latest
               installCLI(->
-                console.log 'Finished installing wakatime cli.'
+                log.debug 'Finished installing wakatime cli.'
                 finishActivation()
               )
             else
@@ -86,6 +91,10 @@ settingChangedHandler = (settings) ->
     statusBarTileView?.show()
   else
     statusBarTileView?.hide()
+  if atom.config.get 'wakatime.debug'
+    log.setLevel('DEBUG')
+  else
+    log.setLevel('INFO')
   apiKey = settings.apikey
   if isValidApiKey(apiKey)
     atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
@@ -96,7 +105,7 @@ saveApiKey = (apiKey) ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
   fs.readFile configFile, 'utf-8', (err, inp) ->
     if err?
-      console.log 'Error: could not read wakatime config file'
+      log.debug 'Error: could not read wakatime config file'
     String::startsWith ?= (s) -> @slice(0, s.length) == s
     String::endsWith   ?= (s) -> s == '' or @slice(-s.length) == s
     contents = []
@@ -130,7 +139,7 @@ saveApiKey = (apiKey) ->
     fs.writeFile configFile, contents.join('\n'), {encoding: 'utf-8'}, (err2) ->
       if err2?
         msg = 'Error: could not write to wakatime config file'
-        console.error msg
+        log.error msg
         statusBarTileView?.setStatus('Error')
         statusBarTileView?.setTitle(msg)
 
@@ -141,7 +150,7 @@ setupConfigs = ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
   fs.readFile configFile, 'utf-8', (err, configContent) ->
     if err?
-      console.log 'Error: could not read wakatime config file'
+      log.debug 'Error: could not read wakatime config file'
       settingChangedHandler atom.config.get('wakatime')
       return
     commonConfigs = ini.decode configContent
@@ -231,18 +240,18 @@ installPython = (callback) ->
     arch = 'amd64'
   url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
 
-  console.log 'downloading python...'
+  log.debug 'downloading python...'
   statusBarTileView?.setStatus('downloading python...')
 
   zipFile = __dirname + path.sep + 'python.zip'
   downloadFile(url, zipFile, ->
 
-    console.log 'extracting python...'
+    log.debug 'extracting python...'
     statusBarTileView?.setStatus('extracting python...')
 
     unzip(zipFile, __dirname + path.sep + 'python', ->
       fs.unlink(zipFile)
-      console.log 'Finished installing python.'
+      log.debug 'Finished installing python.'
       if callback?
         callback()
     )
@@ -258,15 +267,15 @@ isCLILatest = (callback) ->
       execFile(python, args, (error, stdout, stderr) ->
         if not error?
           currentVersion = stderr.trim()
-          console.log 'Current wakatime-cli version is ' + currentVersion
-          console.log 'Checking for updates to wakatime-cli...'
+          log.debug 'Current wakatime-cli version is ' + currentVersion
+          log.debug 'Checking for updates to wakatime-cli...'
           getLatestCliVersion((latestVersion) ->
             if currentVersion == latestVersion
-              console.log 'wakatime-cli is up to date.'
+              log.debug 'wakatime-cli is up to date.'
               if callback?
                 callback(true)
             else
-              console.log 'Found an updated wakatime-cli v' + latestVersion
+              log.debug 'Found an updated wakatime-cli v' + latestVersion
               if callback?
                 callback(false)
           )
@@ -295,7 +304,7 @@ cliLocation = () ->
   return dir
 
 installCLI = (callback) ->
-  console.log 'Downloading wakatime cli...'
+  log.debug 'Downloading wakatime cli...'
   statusBarTileView?.setStatus('downloading wakatime-cli...')
   url = 'https://github.com/wakatime/wakatime/archive/master.zip'
   zipFile = __dirname + path.sep + 'wakatime-master.zip'
@@ -304,7 +313,7 @@ installCLI = (callback) ->
   )
 
 extractCLI = (zipFile, callback) ->
-  console.log 'Extracting wakatime-master.zip file...'
+  log.debug 'Extracting wakatime-master.zip file...'
   statusBarTileView?.setStatus('extracting wakatime-cli...')
   removeCLI(->
     unzip(zipFile, __dirname, callback)
@@ -318,7 +327,7 @@ removeCLI = (callback) ->
           callback()
       )
     catch e
-      console.warn e
+      log.warn e
       if callback?
         callback()
   else
@@ -342,7 +351,7 @@ unzip = (file, outputDir, callback) ->
       zip = new AdmZip(file)
       zip.extractAllTo(outputDir, true)
     catch e
-      console.warn e
+      log.warn e
     finally
       fs.unlink(file)
       if callback?
@@ -375,12 +384,14 @@ sendHeartbeat = (file, lineno, isWrite) ->
             args.push(path.basename(realPath))
             break
 
+      log.debug python + args.join(' ')
+
       proc = execFile(python, args, (error, stdout, stderr) ->
         if error?
           if stderr? and stderr != ''
-            console.warn stderr
+            log.warn stderr
           if stdout? and stdout != ''
-            console.warn stdout
+            log.warn stdout
           if proc.exitCode == 102
             msg = null
             status = null
@@ -399,7 +410,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
             title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
 
           if msg?
-            console.warn msg
+            log.warn msg
           statusBarTileView?.setStatus(status)
           statusBarTileView?.setTitle(title)
 
@@ -454,3 +465,18 @@ formatDate = (date) ->
   if (minute < 10)
     minute = '0' + minute
   return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' ' + hour + ':' + minute + ' ' + ampm
+
+debug = (callback) ->
+  if fs.existsSync(__dirname + path.sep + 'wakatime-master')
+    try
+      rimraf(__dirname + path.sep + 'wakatime-master', ->
+        if callback?
+          callback()
+      )
+    catch e
+      log.warn e
+      if callback?
+        callback()
+  else
+    if callback?
+      callback()
