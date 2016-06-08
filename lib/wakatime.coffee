@@ -41,7 +41,7 @@ module.exports =
     currentTime = Math.round (new Date).getTime() / 1000
 
     hours = 24
-    if not lastInit? or parseInt(lastInit, 10) + 3600 * hours < currentTime
+    if not lastInit? or parseInt(lastInit, 10) + 3600 * hours < currentTime or atom.config.get('wakatime.debug')
       atom.config.set 'wakatime-hidden.lastInit', currentTime
 
       isPythonInstalled((installed) ->
