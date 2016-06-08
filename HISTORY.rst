@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.5 (2016-06-08)
+++++++++++++++++++
+
+- Always check for wakatime-cli updates when debug checked.
+- Fix formatting when debugging wakatime-cli command arguments.
+
+
 6.0.4 (2016-06-07)
 ++++++++++++++++++
 
