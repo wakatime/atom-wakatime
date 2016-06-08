@@ -403,7 +403,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
             args.push(path.basename(realPath))
             break
 
-      log.debug python + args.join(' ')
+      log.debug python + ' ' + args.join(' ')
 
       proc = execFile(python, args, (error, stdout, stderr) ->
         if error?
