@@ -6,8 +6,6 @@ element_name = 'waka-status-bar' + Date.now()
 class StatusBarTileView extends HTMLElement
 
   init: ->
-    @classList.add(element_name, 'inline-block')
-
     @link = document.createElement('a')
     @link.classList.add('inline-block')
     @link.href = 'https://wakatime.com/'

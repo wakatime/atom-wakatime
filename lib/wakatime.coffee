@@ -51,11 +51,16 @@ module.exports =
     statusBarIcon = new StatusBarTileView()
     statusBarIcon.init()
     @statusBarTile = statusBar?.addRightTile(item: statusBarIcon, priority: 300)
+
+    # set status bar icon visibility
+    if atom.config.get 'wakatime.showStatusBarIcon'
+      statusBarIcon.show()
+    else
+      statusBarIcon.hide()
+
     if pluginReady
       statusBarIcon.setTitle('WakaTime ready')
       statusBarIcon.setStatus()
-      if not atom.config.get 'wakatime.showStatusBarIcon'
-        statusBarIcon?.hide()
 
   deactivate: ->
     @statusBarTile?.destroy()
@@ -94,6 +99,13 @@ checkCLI = () ->
 finishActivation = () ->
   pluginReady = true
   setupEventHandlers()
+
+  # set status bar icon visibility
+  if atom.config.get 'wakatime.showStatusBarIcon'
+    statusBarIcon?.show()
+  else
+    statusBarIcon?.hide()
+
   statusBarIcon?.setTitle('WakaTime ready')
   statusBarIcon?.setStatus()
   log.debug 'Finished initializing WakaTime.'
