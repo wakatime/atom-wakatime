@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.7 (2016-06-09)
+++++++++++++++++++
+
+- Always check if Python and wakatime-cli installed, regardless of last time
+  updates to wakatime-cli were checked.
+
+
 6.0.6 (2016-06-09)
 ++++++++++++++++++
 
