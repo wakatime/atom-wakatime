@@ -37,24 +37,14 @@ module.exports =
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
 
-    lastInit = atom.config.get 'wakatime-hidden.lastInit'
-    currentTime = Math.round (new Date).getTime() / 1000
-
-    hours = 24
-    if not lastInit? or parseInt(lastInit, 10) + 3600 * hours < currentTime or atom.config.get('wakatime.debug')
-      atom.config.set 'wakatime-hidden.lastInit', currentTime
-
-      isPythonInstalled((installed) ->
-        if not installed
-          if os.type() is 'Windows_NT'
-            installPython(checkCLI)
-          else
-            window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+    isPythonInstalled((installed) ->
+      if not installed
+        if os.type() is 'Windows_NT'
+          installPython(checkCLI)
         else
-          checkCLI()
-      )
-    else
-      finishActivation()
+          window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+      else
+        checkCLI()
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
@@ -74,19 +64,31 @@ module.exports =
 checkCLI = () ->
   if not isCLIInstalled()
     installCLI(->
-      log.debug 'Finished installing wakatime cli.'
+      log.debug 'Finished installing wakatime-cli.'
       finishActivation()
     )
   else
-    isCLILatest((latest) ->
-      if not latest
-        installCLI(->
-          log.debug 'Finished installing wakatime cli.'
+
+    # only check for updates to wakatime-cli every 24 hours
+    hours = 24
+
+    lastInit = atom.config.get 'wakatime-hidden.lastInit'
+    currentTime = Math.round (new Date).getTime() / 1000
+    beenawhile = parseInt(lastInit, 10) + 3600 * hours < currentTime
+
+    if not lastInit? or beenawhile or atom.config.get('wakatime.debug')
+      atom.config.set 'wakatime-hidden.lastInit', currentTime
+      isCLILatest((latest) ->
+        if not latest
+          installCLI(->
+            log.debug 'Finished installing wakatime-cli.'
+            finishActivation()
+          )
+        else
           finishActivation()
-        )
-      else
-        finishActivation()
-    )
+      )
+    else
+      finishActivation()
 
 finishActivation = () ->
   pluginReady = true
@@ -321,7 +323,7 @@ cliLocation = () ->
   return dir
 
 installCLI = (callback) ->
-  log.debug 'Downloading wakatime cli...'
+  log.debug 'Downloading wakatime-cli...'
   statusBarTileView?.setStatus('downloading wakatime-cli...')
   url = 'https://github.com/wakatime/wakatime/archive/master.zip'
   zipFile = __dirname + path.sep + 'wakatime-master.zip'
