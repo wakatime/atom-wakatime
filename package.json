@@ -1,7 +1,7 @@
 {
   "name": "wakatime",
   "description": "Fitbit for programmers. Get automated metrics and insights about your programming.",
-  "version": "6.0.7",
+  "version": "6.0.8",
   "author": "WakaTime <support@wakatime.com>",
   "configSchema": {
     "apikey": {
