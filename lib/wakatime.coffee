@@ -93,7 +93,7 @@ finishActivation = () ->
   setupEventHandlers()
   statusBarTileView?.setTitle('WakaTime ready')
   statusBarTileView?.setStatus()
-  log.debug 'Finished initializing WakaTime'
+  log.debug 'Finished initializing WakaTime.'
 
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
