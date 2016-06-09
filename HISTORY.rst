@@ -3,6 +3,16 @@ History
 -------
 
 
+6.0.6 (2016-06-09)
+++++++++++++++++++
+
+- Fix bug where wakatime-cli not installed if having to install Python first.
+- No need to prompt before installing Python because using embedded version.
+- Log the correct level in log messages.
+- Use correct warn level name to fix warning log messages.
+- Update npm dependencies rimraf to v2.5.2 and request to v2.72.0.
+
+
 6.0.5 (2016-06-08)
 ++++++++++++++++++
 
