@@ -47,30 +47,11 @@ module.exports =
       isPythonInstalled((installed) ->
         if not installed
           if os.type() is 'Windows_NT'
-            atom.confirm
-              message: 'WakaTime requires Python'
-              detailedMessage: 'Let\'s download and install Python now?'
-              buttons:
-                OK: -> installPython(finishActivation)
-                Cancel: -> window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+            installPython(checkCLI)
           else
             window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
         else
-          if not isCLIInstalled()
-            installCLI(->
-              log.debug 'Finished installing wakatime cli.'
-              finishActivation()
-            )
-          else
-            isCLILatest((latest) ->
-              if not latest
-                installCLI(->
-                  log.debug 'Finished installing wakatime cli.'
-                  finishActivation()
-                )
-              else
-                finishActivation()
-            )
+          checkCLI()
       )
     else
       finishActivation()
@@ -89,6 +70,23 @@ module.exports =
     @statusBarTile?.destroy()
     statusBarTileView?.destroy()
     @settingChangedObserver?.dispose()
+
+checkCLI = () ->
+  if not isCLIInstalled()
+    installCLI(->
+      log.debug 'Finished installing wakatime cli.'
+      finishActivation()
+    )
+  else
+    isCLILatest((latest) ->
+      if not latest
+        installCLI(->
+          log.debug 'Finished installing wakatime cli.'
+          finishActivation()
+        )
+      else
+        finishActivation()
+    )
 
 finishActivation = () ->
   pluginReady = true
