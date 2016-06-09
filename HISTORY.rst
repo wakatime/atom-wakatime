@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.8 (2016-06-09)
+++++++++++++++++++
+
+- Fix for issue #59 causing status bar icon to still show when turned off in
+  settings.
+
+
 6.0.7 (2016-06-09)
 ++++++++++++++++++
 
