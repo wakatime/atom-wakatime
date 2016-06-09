@@ -3,7 +3,7 @@ class Logger
   constructor: (name) ->
     @levels =
       'ERROR': 40
-      'WARNING': 30
+      'WARN': 30
       'INFO': 20
       'DEBUG': 10
     @name = name
@@ -30,12 +30,12 @@ class Logger
     origLine = @originalLine()
     if origLine[0]?
       msg = '[' + origLine[0] + ':' + origLine[1] + '] ' + msg
-    msg = '[' + @level + '] ' + msg
+    msg = '[' + level + '] ' + msg
     msg = '[' + @name + '] ' + msg
     switch level
       when 'DEBUG' then console.log msg
       when 'INFO' then console.log msg
-      when 'WARNING' then console.warn msg
+      when 'WARN' then console.warn msg
       when 'ERROR' then console.error msg
 
   originalLine: () ->
