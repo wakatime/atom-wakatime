@@ -11,7 +11,7 @@ log = null
 packageVersion = null
 lastHeartbeat = 0
 lastFile = ''
-statusBarTileView = null
+statusBarIcon = null
 pluginReady = false
 
 # package dependencies
@@ -48,18 +48,18 @@ module.exports =
     )
 
   consumeStatusBar: (statusBar) ->
-    statusBarTileView = new StatusBarTileView()
-    statusBarTileView.init()
-    @statusBarTile = statusBar?.addRightTile(item: statusBarTileView, priority: 300)
+    statusBarIcon = new StatusBarTileView()
+    statusBarIcon.init()
+    @statusBarTile = statusBar?.addRightTile(item: statusBarIcon, priority: 300)
     if pluginReady
-      statusBarTileView.setTitle('WakaTime ready')
-      statusBarTileView.setStatus()
+      statusBarIcon.setTitle('WakaTime ready')
+      statusBarIcon.setStatus()
       if not atom.config.get 'wakatime.showStatusBarIcon'
-        statusBarTileView?.hide()
+        statusBarIcon?.hide()
 
   deactivate: ->
     @statusBarTile?.destroy()
-    statusBarTileView?.destroy()
+    statusBarIcon?.destroy()
     @settingChangedObserver?.dispose()
 
 checkCLI = () ->
@@ -94,15 +94,15 @@ checkCLI = () ->
 finishActivation = () ->
   pluginReady = true
   setupEventHandlers()
-  statusBarTileView?.setTitle('WakaTime ready')
-  statusBarTileView?.setStatus()
+  statusBarIcon?.setTitle('WakaTime ready')
+  statusBarIcon?.setStatus()
   log.debug 'Finished initializing WakaTime.'
 
 settingChangedHandler = (settings) ->
   if settings.showStatusBarIcon
-    statusBarTileView?.show()
+    statusBarIcon?.show()
   else
-    statusBarTileView?.hide()
+    statusBarIcon?.hide()
   if atom.config.get 'wakatime.debug'
     log.setLevel('DEBUG')
   else
@@ -152,8 +152,8 @@ saveApiKey = (apiKey) ->
       if err2?
         msg = 'Error: could not write to wakatime config file'
         log.error msg
-        statusBarTileView?.setStatus('Error')
-        statusBarTileView?.setTitle(msg)
+        statusBarIcon?.setStatus('Error')
+        statusBarIcon?.setTitle(msg)
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
@@ -253,13 +253,13 @@ installPython = (callback) ->
   url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
 
   log.debug 'downloading python...'
-  statusBarTileView?.setStatus('downloading python...')
+  statusBarIcon?.setStatus('downloading python...')
 
   zipFile = __dirname + path.sep + 'python.zip'
   downloadFile(url, zipFile, ->
 
     log.debug 'extracting python...'
-    statusBarTileView?.setStatus('extracting python...')
+    statusBarIcon?.setStatus('extracting python...')
 
     unzip(zipFile, __dirname + path.sep + 'python', ->
       fs.unlink(zipFile)
@@ -325,7 +325,7 @@ cliLocation = () ->
 
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
-  statusBarTileView?.setStatus('downloading wakatime-cli...')
+  statusBarIcon?.setStatus('downloading wakatime-cli...')
   url = 'https://github.com/wakatime/wakatime/archive/master.zip'
   zipFile = __dirname + path.sep + 'wakatime-master.zip'
   downloadFile(url, zipFile, ->
@@ -334,7 +334,7 @@ installCLI = (callback) ->
 
 extractCLI = (zipFile, callback) ->
   log.debug 'Extracting wakatime-master.zip file...'
-  statusBarTileView?.setStatus('extracting wakatime-cli...')
+  statusBarIcon?.setStatus('extracting wakatime-cli...')
   removeCLI(->
     unzip(zipFile, __dirname, callback)
   )
@@ -431,13 +431,13 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
           if msg?
             log.warn msg
-          statusBarTileView?.setStatus(status)
-          statusBarTileView?.setTitle(title)
+          statusBarIcon?.setStatus(status)
+          statusBarIcon?.setTitle(title)
 
         else
-          statusBarTileView?.setStatus()
+          statusBarIcon?.setStatus()
           today = new Date()
-          statusBarTileView?.setTitle('Last heartbeat sent ' + formatDate(today))
+          statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
       )
       lastHeartbeat = time
       lastFile = file.path
