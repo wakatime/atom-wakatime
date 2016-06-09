@@ -446,6 +446,9 @@ fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
     return true
   patterns = atom.config.get('wakatime.ignore')
+  if not patterns?
+    return true
+
   ignore = false
   for pattern in patterns
     re = new RegExp(pattern, 'gi')
