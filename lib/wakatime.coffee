@@ -45,6 +45,7 @@ module.exports =
           window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
       else
         checkCLI()
+    )
 
   consumeStatusBar: (statusBar) ->
     statusBarTileView = new StatusBarTileView()
