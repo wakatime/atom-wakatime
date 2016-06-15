@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.9 (2016-06-15)
+++++++++++++++++++
+
+- Use SVG for status bar icon so icon color changes the inverse of current
+  color Theme (#61).
+
+
 6.0.8 (2016-06-09)
 ++++++++++++++++++
 
