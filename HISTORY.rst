@@ -3,6 +3,12 @@ History
 -------
 
 
+6.0.10 (2016-06-30)
+++++++++++++++++++
+
+- Require version in output before accepting Python location as valid. #64
+
+
 6.0.9 (2016-06-15)
 ++++++++++++++++++
 
