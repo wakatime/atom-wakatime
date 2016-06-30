@@ -233,10 +233,10 @@ pythonLocation = (callback, locations) ->
     if not locations?
       locations = [
         __dirname + path.sep + 'python' + path.sep + 'pythonw',
-        "pythonw",
-        "python",
-        "/usr/local/bin/python",
-        "/usr/bin/python",
+        'pythonw',
+        'python',
+        '/usr/local/bin/python',
+        '/usr/bin/python',
       ]
       i = 26
       while i < 50
@@ -247,11 +247,13 @@ pythonLocation = (callback, locations) ->
     if locations.length is 0
       callback(null)
       return
+    pattern = /\d+\.\d+/
     location = locations[0]
     execFile(location, args, (error, stdout, stderr) ->
       if not error?
-        global.cachedPythonLocation = location
-        callback(location)
+        if stdout? and stdout.match(pattern) or stderr? and stderr.match(pattern)
+          global.cachedPythonLocation = location
+          callback(location)
       else
         locations.splice(0, 1)
         pythonLocation(callback, locations)
