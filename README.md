@@ -32,6 +32,13 @@ Additional settings are in `$HOME/.wakatime.cfg` for [wakatime cli](https://gith
 
 Note: Behind a proxy? Configure Atom to use your proxy when installing wakatime: <https://github.com/atom/apm#behind-a-firewall>
 
-Atom writes errors to the developer console at `View -> Developer -> Toggle Developer Tools`.
+Atom writes errors to the Atom Developer Console. To check for errors:
 
-For more general troubleshooting information, see [wakatime/wakatime#troubleshooting](https://github.com/wakatime/wakatime#troubleshooting).
+1. Inside Atom, go to `View -> Developer -> Toggle Developer Tools`
+2. Clear the developer console (the circle button top left of the console)
+3. Inside Atom, go to `View -> Developer -> Reload Window`
+
+That will reload all plugins including WakaTime, and you should see the startup process logged in the developer console.
+If there are no errors in your developer console after startup and editing a file, then check for errors in your `~/.wakatime.log` file.
+
+For checking your `~/.wakatime.log` file, see [wakatime/wakatime#troubleshooting](https://github.com/wakatime/wakatime#troubleshooting).
