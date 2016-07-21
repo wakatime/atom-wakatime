@@ -32,7 +32,7 @@ Additional settings are in `$HOME/.wakatime.cfg` for [wakatime cli](https://gith
 
 Atom writes errors to the Atom Developer Console. To check for errors:
 
-1. Turn on the debug checkbox in `Settings -> Packages -> wakatime -> Settings`.
+1. Turn on the debug checkbox in `Settings -> Packages -> wakatime -> Settings`
 2. Inside Atom, go to `View -> Developer -> Toggle Developer Tools`
 3. Clear the developer console (the circle button top left of the console)
 4. Inside Atom, go to `View -> Developer -> Reload Window`
