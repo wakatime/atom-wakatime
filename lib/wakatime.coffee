@@ -260,7 +260,7 @@ pythonLocation = (callback, locations) ->
     )
 
 installPython = (callback) ->
-  pyVer = '3.5.1'
+  pyVer = '3.5.2'
   arch = 'win32'
   if os.arch().indexOf('x64') > -1
     arch = 'amd64'
