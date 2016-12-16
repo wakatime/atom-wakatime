@@ -392,7 +392,11 @@ unzip = (file, outputDir, callback) ->
         callback()
 
 sendHeartbeat = (file, lineno, isWrite) ->
-  if not file.path? or file.path is undefined or fileIsIgnored(file.path)
+  if not file.path? or file.path is undefined
+    log.debug 'Skipping file because path does not exist: ' + file.path
+    return
+  if fileIsIgnored(file.path)
+    log.debug 'Skipping file because path matches ignore pattern: ' + file.path
     return
 
   time = Date.now()
