@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.11 (2016-12-16)
+++++++++++++++++++
+
+- Log skipped files in debug mode. #67
+- Use python v3.5.2 on Windows.
+
+
 6.0.10 (2016-06-30)
 ++++++++++++++++++
 
