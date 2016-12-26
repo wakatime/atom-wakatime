@@ -43,9 +43,3 @@ If there are no errors in your developer console after startup and editing a fil
 For checking your `~/.wakatime.log` file, see [wakatime/wakatime#troubleshooting](https://github.com/wakatime/wakatime#troubleshooting).
 
 Note: Behind a proxy? Configure Atom to use your proxy when installing wakatime: <https://github.com/atom/apm#behind-a-firewall>
-
-Ignored Directories: These folders are ignored by default. If you work out of one of these locations, remove it from your wakatime setting `Exclude File Paths`:
-
-* `/var/`
-* `/tmp/`
-* `/private/`
