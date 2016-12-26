@@ -3,6 +3,12 @@ History
 -------
 
 
+6.0.12 (2016-12-26)
+++++++++++++++++++
+
+- Remove /var/www/ folder from default ignored folders. #68
+
+
 6.0.11 (2016-12-16)
 ++++++++++++++++++
 
