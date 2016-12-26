@@ -16,7 +16,7 @@
       "description": "Exclude these file paths from logging; POSIX regex patterns",
       "type": "array",
       "default": [
-        "^/var/",
+        "^/var/(?!www/).*",
         "^/tmp/",
         "^/private/",
         "COMMIT_EDITMSG$",
