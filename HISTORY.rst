@@ -3,6 +3,12 @@ History
 -------
 
 
+6.0.13 (2017-02-07)
+++++++++++++++++++
+
+- Pass config file location to wakatime-cli background process. #65
+
+
 6.0.12 (2016-12-26)
 ++++++++++++++++++
 
@@ -97,7 +103,7 @@ History
 5.0.11 (2016-05-29)
 ++++++++++++++++++
 
-- Fix bug causing api key to be loaded from common config into Atom's config 
+- Fix bug causing api key to be loaded from common config into Atom's config
   when starting up.
 
 
