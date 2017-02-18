@@ -4,6 +4,12 @@ Quantify your coding inside GitHub's Atom editor.
 
 ## Installation
 
+Just run this terminal command:
+
+    apm install wakatime
+
+Or, follow these steps:
+
 1. Inside Atom, navigate to `Preferences`/`Settings` -> `Install` and search for `wakatime`.
 
   ![Project Overview](https://wakatime.com/static/img/ScreenShots/atom-wakatime-install-1.png)
