@@ -19,7 +19,7 @@ AdmZip = require 'adm-zip'
 fs = require 'fs'
 os = require 'os'
 path = require 'path'
-execFile = require('child_process').execFile
+child_process = require 'child_process'
 request = require 'request'
 rimraf = require 'rimraf'
 ini = require 'ini'
@@ -249,7 +249,7 @@ pythonLocation = (callback, locations) ->
       return
     pattern = /\d+\.\d+/
     location = locations[0]
-    execFile(location, args, (error, stdout, stderr) ->
+    child_process.execFile(location, args, (error, stdout, stderr) ->
       if not error?
         if stdout? and stdout.match(pattern) or stderr? and stderr.match(pattern)
           global.cachedPythonLocation = location
@@ -290,7 +290,7 @@ isCLILatest = (callback) ->
   pythonLocation((python) ->
     if python?
       args = [cliLocation(), '--version']
-      execFile(python, args, (error, stdout, stderr) ->
+      child_process.execFile(python, args, (error, stdout, stderr) ->
         if not error?
           currentVersion = stderr.trim()
           log.debug 'Current wakatime-cli version is ' + currentVersion
@@ -428,7 +428,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
       log.debug python + ' ' + args.join(' ')
 
-      proc = execFile(python, args, (error, stdout, stderr) ->
+      proc = child_process.execFile(python, args, (error, stdout, stderr) ->
         if error?
           if stderr? and stderr != ''
             log.warn stderr
