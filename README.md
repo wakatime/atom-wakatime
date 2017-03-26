@@ -4,12 +4,6 @@ Quantify your coding inside GitHub's Atom editor.
 
 ## Installation
 
-Just run this Terminal command:
-
-    apm install wakatime
-
-Or, follow these steps:
-
 ![install](./install.gif)
 
 1. Inside Atom, navigate to `Preferences`/`Settings` -> `Install` and search for `wakatime`.
@@ -25,6 +19,11 @@ Or, follow these steps:
 4. Use Atom like you normally do and your time will automatically be tracked for you.
 
 5. Visit <https://wakatime.com> to see your logged time.
+
+Note: The leet way to install WakaTime is with this Terminal command:
+
+    apm install wakatime
+
 
 ## Screen Shots
 
