@@ -16,9 +16,7 @@ Quantify your coding inside GitHub's Atom editor.
 
 3. Click `Settings`, then enter your [api key](https://wakatime.com/settings#apikey).
 
-4. Use Atom like you normally do and your time will automatically be tracked for you.
-
-5. Visit <https://wakatime.com> to see your logged time.
+4. Use Atom and your coding activity will be displayed on your [WakaTime dashboard](https://wakatime.com).
 
 Note: The leet way to install WakaTime is with this Terminal command:
 
