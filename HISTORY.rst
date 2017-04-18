@@ -3,6 +3,13 @@ History
 -------
 
 
+6.0.14 (2017-04-17)
+++++++++++++++++++
+
+- Use local file for saving timestamp when last checked for updates to prevent
+  modifying Atom's config. #71
+
+
 6.0.13 (2017-02-07)
 ++++++++++++++++++
 
@@ -225,7 +232,8 @@ History
 - upgrade argparse to v1.3.0
 - move language translations to api server
 - move extension rules to api server
-- detect correct header file language based on presence of .cpp or .c files named the same as the .h file
+- detect correct header file language based on presence of .cpp or .c files
+  named the same as the .h file.
 
 
 4.0.13 (2015-08-20)
@@ -347,7 +355,8 @@ History
 2.2.0 (2015-01-05)
 ++++++++++++++++++
 
-- use highlight.js v8.4.0 or greater because installing from github causing problems
+- use highlight.js v8.4.0 or greater because installing from github causing
+  problems.
 
 
 2.1.0 (2015-01-02)
