@@ -74,27 +74,53 @@ checkCLI = () ->
       finishActivation()
     )
   else
+    getLastCheckedForUpdates((lastChecked) ->
 
-    # only check for updates to wakatime-cli every 24 hours
-    hours = 24
+      # only check for updates to wakatime-cli every 24 hours
+      hours = 24
 
-    lastInit = atom.config.get 'wakatime-hidden.lastInit'
-    currentTime = Math.round (new Date).getTime() / 1000
-    beenawhile = parseInt(lastInit, 10) + 3600 * hours < currentTime
+      currentTime = Math.round (new Date).getTime() / 1000
+      beenLongEnough = lastChecked + 3600 * hours < currentTime
 
-    if not lastInit? or beenawhile or atom.config.get('wakatime.debug')
-      atom.config.set 'wakatime-hidden.lastInit', currentTime
-      isCLILatest((latest) ->
-        if not latest
-          installCLI(->
-            log.debug 'Finished installing wakatime-cli.'
+      if beenLongEnough or atom.config.get('wakatime.debug')
+        setLastCheckedForUpdates(currentTime)
+        isCLILatest((latest) ->
+          if not latest
+            installCLI(->
+              log.debug 'Finished installing wakatime-cli.'
+              finishActivation()
+            )
+          else
             finishActivation()
-          )
-        else
-          finishActivation()
-      )
-    else
-      finishActivation()
+        )
+      else
+        finishActivation()
+    )
+
+getLastCheckedForUpdates = (callback) ->
+  filePath = path.join cliFolder(), 'last-checked-for-updates'
+  if fs.existsSync(filePath)
+    fs.readFile filePath, 'utf-8', (err, contents) ->
+      if err?
+        if callback?
+          callback(0)
+        return
+      if contents?
+        try
+          if callback?
+            callback(parseInt(contents.trim(), 10) or 0)
+          return
+      if callback?
+        callback(0)
+  else
+    if callback?
+      callback(0)
+
+setLastCheckedForUpdates = (lastChecked) ->
+  filePath = path.join cliFolder(), 'last-checked-for-updates'
+  fs.writeFile filePath, lastChecked.toString(), {encoding: 'utf-8'}, (err) ->
+    if err?
+      log.debug 'Unable to save last checked for updates timestamp.'
 
 finishActivation = () ->
   pluginReady = true
@@ -334,7 +360,10 @@ getLatestCliVersion = (callback) ->
   )
 
 cliLocation = () ->
-  dir = __dirname + path.sep + 'wakatime-master' + path.sep + 'wakatime' + path.sep + 'cli.py'
+  return path.join cliFolder(), 'cli.py'
+
+cliFolder = () ->
+  dir = path.join __dirname, 'wakatime-master', 'wakatime'
   return dir
 
 installCLI = (callback) ->
