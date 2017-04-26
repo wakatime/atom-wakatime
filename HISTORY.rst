@@ -3,6 +3,12 @@ History
 -------
 
 
+7.0.0 (2017-04-25)
+++++++++++++++++++
+
+- Activate package in idle callback to improve startup time. #35
+
+
 6.0.14 (2017-04-17)
 ++++++++++++++++++
 
