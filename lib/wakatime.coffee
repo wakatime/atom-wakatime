@@ -6,6 +6,19 @@ License:     BSD, see LICENSE for more details.
 Website:     https://wakatime.com/
 ###
 
+StatusBarTileView = require './status-bar-tile-view'
+Logger = require './logger'
+
+# dependencies lazy-loaded to improve startup time
+AdmZip = null
+fs = null
+os = null
+path = null
+child_process = null
+request = null
+rimraf = null
+ini = null
+
 # package-global attributes
 log = null
 packageVersion = null
@@ -14,19 +27,6 @@ lastFile = ''
 statusBarIcon = null
 pluginReady = false
 
-# package dependencies
-AdmZip = require 'adm-zip'
-fs = require 'fs'
-os = require 'os'
-path = require 'path'
-child_process = require 'child_process'
-request = require 'request'
-rimraf = require 'rimraf'
-ini = require 'ini'
-
-StatusBarTileView = require './status-bar-tile-view'
-Logger = require './logger'
-
 module.exports =
   activate: (state) ->
     log = new Logger('WakaTime')
@@ -34,18 +34,13 @@ module.exports =
       log.setLevel('DEBUG')
     packageVersion = atom.packages.getLoadedPackage('wakatime').metadata.version
     log.debug 'Initializing WakaTime v' + packageVersion + '...'
+    requestIdleCallback @delayedActivate, {timeout: 10000}
+
+  delayedActivate: ->
+    loadDependencies()
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
-
-    isPythonInstalled((installed) ->
-      if not installed
-        if os.type() is 'Windows_NT'
-          installPython(checkCLI)
-        else
-          window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
-      else
-        checkCLI()
-    )
+    checkPython()
 
   consumeStatusBar: (statusBar) ->
     statusBarIcon = new StatusBarTileView()
@@ -66,6 +61,17 @@ module.exports =
     @statusBarTile?.destroy()
     statusBarIcon?.destroy()
     @settingChangedObserver?.dispose()
+
+checkPython = () ->
+  isPythonInstalled((installed) ->
+    if not installed
+      if os.type() is 'Windows_NT'
+        installPython(checkCLI)
+      else
+        window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
+    else
+      checkCLI()
+  )
 
 checkCLI = () ->
   if not isCLIInstalled()
@@ -195,6 +201,16 @@ saveApiKey = (apiKey) ->
 
 getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
+
+loadDependencies = ->
+  AdmZip = require 'adm-zip'
+  fs = require 'fs'
+  os = require 'os'
+  path = require 'path'
+  child_process = require 'child_process'
+  request = require 'request'
+  rimraf = require 'rimraf'
+  ini = require 'ini'
 
 setupConfigs = ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
