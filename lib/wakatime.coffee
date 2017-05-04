@@ -414,7 +414,12 @@ removeCLI = (callback) ->
       callback()
 
 downloadFile = (url, outputFile, callback) ->
-  r = request(url)
+  options = {
+      certFile: atom.config.get('wakatime').certFile,
+      proxy: atom.config.get('wakatime').proxyString,
+      url: url
+  }
+  r = request(options)
   out = fs.createWriteStream(outputFile)
   r.pipe(out)
   r.on('end', ->
