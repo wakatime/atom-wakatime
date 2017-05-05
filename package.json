@@ -35,26 +35,12 @@
       "default": true,
       "order": 3
     },
-    "proxyString": {
-        "title": "Proxy string",
-        "description": "Your proxy string <username:password@host:port>",
-        "type": "string",
-        "default": "",
-        "order": 4
-    },
-    "certFile": {
-        "title": "Path to certifcate file",
-        "description": "Add .crt file. Commomly used: ca-bundle.crt",
-        "type": "string",
-        "default": "",
-        "order": 5
-    },
     "debug": {
       "title": "Debug",
       "description": "Logs verbose debug messages to the Atom developer console and ~/.wakatime.log file.",
       "type": "boolean",
       "default": false,
-      "order": 6
+      "order": 4
     }
   },
   "consumedServices": {
