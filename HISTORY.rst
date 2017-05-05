@@ -3,6 +3,12 @@ History
 -------
 
 
+7.0.1 (2017-05-05)
+++++++++++++++++++
+
+- Ability to disable SSL Cert Verification from Atom configs. #73
+
+
 7.0.0 (2017-04-25)
 ++++++++++++++++++
 
