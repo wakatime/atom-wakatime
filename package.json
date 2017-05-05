@@ -41,7 +41,14 @@
       "type": "boolean",
       "default": false,
       "order": 4
-    }
+    },
+    "strictSSL": {
+      "title": "Enable strictSSL",
+      "description": "Toggle strictssl",
+      "type":"boolean",
+      "default":true,
+      "order": 5
+      }
   },
   "consumedServices": {
     "status-bar": {

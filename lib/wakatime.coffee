@@ -415,7 +415,7 @@ removeCLI = (callback) ->
 
 downloadFile = (url, outputFile, callback) ->
   options = {
-      strictSSL: false,
+      strictSSL: atom.config.get('wakatime.strictSSL')
       url: url
   }
   r = request(options)
