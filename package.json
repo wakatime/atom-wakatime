@@ -54,7 +54,7 @@
       "description": "Logs verbose debug messages to the Atom developer console and ~/.wakatime.log file.",
       "type": "boolean",
       "default": false,
-      "order": 4
+      "order": 6
     }
   },
   "consumedServices": {
