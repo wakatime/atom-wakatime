@@ -42,13 +42,13 @@
       "default": false,
       "order": 4
     },
-    "strictSSL": {
-      "title": "Enable strictSSL",
-      "description": "Toggle strictssl",
+    "disableSSLCertVerify": {
+      "title": "Disable SSL Cert Verify",
+      "description": "Disables verifying SSL Certificates for HTTPS requests. By default, SSL verification is enabled.",
       "type":"boolean",
-      "default":true,
+      "default": false,
       "order": 5
-      }
+    }
   },
   "consumedServices": {
     "status-bar": {

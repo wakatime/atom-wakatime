@@ -362,10 +362,9 @@ isCLILatest = (callback) ->
   )
 
 getLatestCliVersion = (callback) ->
-  options = {
-      strictSSL: atom.config.get('wakatime.strictSSL')
-      url: 'https://raw.githubusercontent.com/wakatime/wakatime/master/wakatime/__about__.py'
-  }
+  options =
+    strictSSL: not atom.config.get('wakatime.disableSSLCertVerify')
+    url: 'https://raw.githubusercontent.com/wakatime/wakatime/master/wakatime/__about__.py'
   request.get(options, (error, response, body) ->
     version = null
     if !error and response.statusCode == 200
@@ -417,10 +416,9 @@ removeCLI = (callback) ->
       callback()
 
 downloadFile = (url, outputFile, callback) ->
-  options = {
-      strictSSL: atom.config.get('wakatime.strictSSL')
-      url: url
-  }
+  options =
+    strictSSL: not atom.config.get('wakatime.disableSSLCertVerify')
+    url: url
   r = request(options)
   out = fs.createWriteStream(outputFile)
   r.pipe(out)
