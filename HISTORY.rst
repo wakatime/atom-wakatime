@@ -3,6 +3,12 @@ History
 -------
 
 
+7.0.2 (2017-05-05)
+++++++++++++++++++
+
+- Propagate disable ssl cert verification config to wakatime-cli.
+
+
 7.0.1 (2017-05-05)
 ++++++++++++++++++
 
