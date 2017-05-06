@@ -462,6 +462,8 @@ sendHeartbeat = (file, lineno, isWrite) ->
         args.push(lineno)
       if atom.config.get 'wakatime.debug'
         args.push('--verbose')
+      if atom.config.get 'wakatime.disableSSLCertVerify'
+        args.push('--no-ssl-verify')
 
       # fix for wakatime/atom-wakatime#65
       args.push('--config')
