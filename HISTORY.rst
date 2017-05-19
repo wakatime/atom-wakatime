@@ -3,6 +3,13 @@ History
 -------
 
 
+7.0.3 (2017-05-18)
+++++++++++++++++++
+
+- Improve package settings placeholder for api key, when api key in
+  ~/.wakatime.cfg is not valid.
+
+
 7.0.2 (2017-05-05)
 ++++++++++++++++++
 
