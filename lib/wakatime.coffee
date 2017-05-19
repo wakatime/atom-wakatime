@@ -142,7 +142,7 @@ finishActivation = () ->
   statusBarIcon?.setStatus()
   log.debug 'Finished initializing WakaTime.'
 
-settingChangedHandler = (settings) ->
+settingChangedHandler = (settings, initial) ->
   if settings.showStatusBarIcon
     statusBarIcon?.show()
   else
@@ -156,6 +156,9 @@ settingChangedHandler = (settings) ->
     atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
     atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
     saveApiKey apiKey
+  else if initial
+    atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
+    atom.config.set 'wakatime.apikey', 'Enter your api key...'
 
 saveApiKey = (apiKey) ->
   configFile = path.join getUserHome(), '.wakatime.cfg'
@@ -217,14 +220,14 @@ setupConfigs = ->
   fs.readFile configFile, 'utf-8', (err, configContent) ->
     if err?
       log.debug 'Error: could not read wakatime config file'
-      settingChangedHandler atom.config.get('wakatime')
+      settingChangedHandler atom.config.get('wakatime'), true
       return
     commonConfigs = ini.decode configContent
     if commonConfigs? and commonConfigs.settings? and isValidApiKey(commonConfigs.settings.api_key)
       atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
       atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
     else
-      settingChangedHandler atom.config.get('wakatime')
+      settingChangedHandler atom.config.get('wakatime'), true
 
 isValidApiKey = (key) ->
   if not key?
