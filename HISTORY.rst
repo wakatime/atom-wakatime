@@ -349,7 +349,7 @@ History
 4.0.0 (2015-01-21)
 ++++++++++++++++++
 
-- remove depreciated atom.workspaceView
+- remove deprecated atom.workspaceView
 
 
 3.0.2 (2015-01-07)
