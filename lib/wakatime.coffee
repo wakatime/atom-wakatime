@@ -278,9 +278,12 @@ pythonLocation = (callback, locations) ->
     if not locations?
       locations = [
         __dirname + path.sep + 'python' + path.sep + 'pythonw',
+        'python3',
         'pythonw',
         'python',
+        '/usr/local/bin/python3',
         '/usr/local/bin/python',
+        '/usr/bin/python3',
         '/usr/bin/python',
       ]
       i = 26
