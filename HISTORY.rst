@@ -3,6 +3,13 @@ History
 -------
 
 
+7.0.4 (2017-11-10)
+++++++++++++++++++
+
+- Prefer Python 3 if available.
+  `#77 <https://github.com/wakatime/atom-wakatime/issues/77>`_
+
+
 7.0.3 (2017-05-18)
 ++++++++++++++++++
 
@@ -19,59 +26,67 @@ History
 7.0.1 (2017-05-05)
 ++++++++++++++++++
 
-- Ability to disable SSL Cert Verification from Atom configs. #73
+- Ability to disable SSL Cert Verification from Atom configs.
+  `#73 <https://github.com/wakatime/atom-wakatime/issues/73>`_
 
 
 7.0.0 (2017-04-25)
 ++++++++++++++++++
 
-- Activate package in idle callback to improve startup time. #35
+- Activate package in idle callback to improve startup time.
+  `#35 <https://github.com/wakatime/atom-wakatime/issues/35>`_
 
 
 6.0.14 (2017-04-17)
 ++++++++++++++++++
 
 - Use local file for saving timestamp when last checked for updates to prevent
-  modifying Atom's config. #71
+  modifying Atom's config.
+  `#71 <https://github.com/wakatime/atom-wakatime/issues/71>`_
 
 
 6.0.13 (2017-02-07)
 ++++++++++++++++++
 
-- Pass config file location to wakatime-cli background process. #65
+- Pass config file location to wakatime-cli background process.
+  `#65 <https://github.com/wakatime/atom-wakatime/issues/65>`_
 
 
 6.0.12 (2016-12-26)
 ++++++++++++++++++
 
-- Remove /var/www/ folder from default ignored folders. #68
+- Remove /var/www/ folder from default ignored folders.
+  `#68 <https://github.com/wakatime/atom-wakatime/issues/68>`_
 
 
 6.0.11 (2016-12-16)
 ++++++++++++++++++
 
-- Log skipped files in debug mode. #67
+- Log skipped files in debug mode.
+  `#67 <https://github.com/wakatime/atom-wakatime/issues/67>`_
 - Use python v3.5.2 on Windows.
 
 
 6.0.10 (2016-06-30)
 ++++++++++++++++++
 
-- Require version in output before accepting Python location as valid. #64
+- Require version in output before accepting Python location as valid.
+  `#64 <https://github.com/wakatime/atom-wakatime/issues/64>`_
 
 
 6.0.9 (2016-06-15)
 ++++++++++++++++++
 
 - Use SVG for status bar icon so icon color changes the inverse of current
-  color Theme (#61).
+  color Theme.
+  `#61 <https://github.com/wakatime/atom-wakatime/issues/61>`_
 
 
 6.0.8 (2016-06-09)
 ++++++++++++++++++
 
-- Fix for issue #59 causing status bar icon to still show when turned off in
-  settings.
+- Fix bug causing status bar icon to be displayed even when off in settings.
+  `#65 <https://github.com/wakatime/atom-wakatime/issues/65>`_
 
 
 6.0.7 (2016-06-09)
@@ -102,7 +117,8 @@ History
 ++++++++++++++++++
 
 - Prevent checking for wakatime-cli updates when offline.
-- Only check for wakatime-cli updates once every 24 hours. Fixes #37.
+- Only check for wakatime-cli updates once every 24 hours.
+  `#37 <https://github.com/wakatime/atom-wakatime/issues/37>`_
 
 
 6.0.3 (2016-06-07)
