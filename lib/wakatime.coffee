@@ -286,11 +286,11 @@ pythonLocation = (callback, locations) ->
         '/usr/bin/python3',
         '/usr/bin/python',
       ]
-      i = 26
-      while i < 50
+      i = 39
+      while i >= 26
         locations.push '\\python' + i + '\\pythonw'
         locations.push '\\Python' + i + '\\pythonw'
-        i++
+        i--
     args = ['--version']
     if locations.length is 0
       callback(null)
