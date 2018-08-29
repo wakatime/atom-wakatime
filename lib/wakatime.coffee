@@ -448,15 +448,18 @@ unzip = (file, outputDir, callback) ->
         callback()
 
 sendHeartbeat = (file, lineno, isWrite) ->
-  if not file.path? or file.path is undefined
+  if (not file.path? or file.path is undefined) and (not file.getPath? or file.getPath() is undefined)
     log.debug 'Skipping file because path does not exist: ' + file.path
     return
-  if fileIsIgnored(file.path)
-    log.debug 'Skipping file because path matches ignore pattern: ' + file.path
+
+  filePath = file.path or file.getPath()
+
+  if fileIsIgnored(filePath)
+    log.debug 'Skipping file because path matches ignore pattern: ' + filePath
     return
 
   time = Date.now()
-  currentFile = file.path
+  currentFile = filePath
   if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
     pythonLocation (python) ->
       return unless python?
@@ -475,8 +478,8 @@ sendHeartbeat = (file, lineno, isWrite) ->
       args.push('--config')
       args.push(path.join getUserHome(), '.wakatime.cfg')
 
-      if atom.project.contains(file.path)
-        currentFile = file.path
+      if atom.project.contains(filePath)
+        currentFile = filePath
         for rootDir in atom.project.rootDirectories
           realPath = rootDir.realPath
           if currentFile.indexOf(realPath) > -1
@@ -520,7 +523,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
           statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
       )
       lastHeartbeat = time
-      lastFile = file.path
+      lastFile = filePath
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
