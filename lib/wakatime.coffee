@@ -452,14 +452,13 @@ sendHeartbeat = (file, lineno, isWrite) ->
     log.debug 'Skipping file because path does not exist: ' + file.path
     return
 
-  filePath = file.path or file.getPath()
+  currentFile = file.path or file.getPath()
 
-  if fileIsIgnored(filePath)
-    log.debug 'Skipping file because path matches ignore pattern: ' + filePath
+  if fileIsIgnored(currentFile)
+    log.debug 'Skipping file because path matches ignore pattern: ' + currentFile
     return
 
   time = Date.now()
-  currentFile = filePath
   if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
     pythonLocation (python) ->
       return unless python?
@@ -478,8 +477,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
       args.push('--config')
       args.push(path.join getUserHome(), '.wakatime.cfg')
 
-      if atom.project.contains(filePath)
-        currentFile = filePath
+      if atom.project.contains(currentFile)
         for rootDir in atom.project.rootDirectories
           realPath = rootDir.realPath
           if currentFile.indexOf(realPath) > -1
@@ -523,7 +521,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
           statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
       )
       lastHeartbeat = time
-      lastFile = filePath
+      lastFile = currentFile
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
