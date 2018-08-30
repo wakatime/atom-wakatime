@@ -3,6 +3,14 @@ History
 -------
 
 
+7.0.5 (2018-08-30)
+++++++++++++++++++
+
+- Support for editing remote files.
+  `#83 <https://github.com/wakatime/atom-wakatime/issues/83>`_
+- Detect Python3 before Python2 on Windows OS.
+
+
 7.0.4 (2017-11-10)
 ++++++++++++++++++
 
