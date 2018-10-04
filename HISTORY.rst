@@ -3,6 +3,12 @@ History
 -------
 
 
+7.0.7 (2018-10-03)
+++++++++++++++++++
+
+- Improve retry error handling by re-raising original exception.
+
+
 7.0.6 (2018-10-03)
 ++++++++++++++++++
 
