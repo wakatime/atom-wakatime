@@ -3,6 +3,13 @@ History
 -------
 
 
+7.0.6 (2018-10-03)
+++++++++++++++++++
+
+- Retry executing wakatime-cli when sending heartbeats up to 5 times.
+  `#85 <https://github.com/wakatime/atom-wakatime/issues/85>`_
+
+
 7.0.5 (2018-08-30)
 ++++++++++++++++++
 
