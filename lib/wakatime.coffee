@@ -324,10 +324,13 @@ installPython = (callback) ->
     statusBarIcon?.setStatus('extracting python...')
 
     unzip(zipFile, __dirname + path.sep + 'python', ->
-      fs.unlink(zipFile)
-      log.debug 'Finished installing python.'
-      if callback?
-        callback()
+      fs.unlink(zipFile, (e) ->
+        if e?
+          log.warn e
+        log.debug 'Finished installing python.'
+        if callback?
+          callback()
+      )
     )
   )
 
@@ -443,9 +446,12 @@ unzip = (file, outputDir, callback) ->
     catch e
       log.warn e
     finally
-      fs.unlink(file)
-      if callback?
-        callback()
+      fs.unlink(file, (err) ->
+        if err?
+          log.warn err
+        if callback?
+          callback()
+      )
 
 sendHeartbeat = (file, lineno, isWrite) ->
   if (not file.path? or file.path is undefined) and (not file.getPath? or file.getPath() is undefined)
@@ -485,43 +491,59 @@ sendHeartbeat = (file, lineno, isWrite) ->
             args.push(path.basename(realPath))
             break
 
-      log.debug python + ' ' + args.join(' ')
-
-      proc = child_process.execFile(python, args, (error, stdout, stderr) ->
-        if error?
-          if stderr? and stderr != ''
-            log.warn stderr
-          if stdout? and stdout != ''
-            log.warn stdout
-          if proc.exitCode == 102
-            msg = null
-            status = null
-            title = 'WakaTime Offline, coding activity will sync when online.'
-          else if proc.exitCode == 103
-            msg = 'An error occured while parsing ~/.wakatime.cfg. Check ~/.wakatime.log for more info.'
-            status = 'Error'
-            title = msg
-          else if proc.exitCode == 104
-            msg = 'Invalid API Key. Make sure your API Key is correct!'
-            status = 'Error'
-            title = msg
-          else
-            msg = error
-            status = 'Error'
-            title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
-
-          if msg?
-            log.warn msg
-          statusBarIcon?.setStatus(status)
-          statusBarIcon?.setTitle(title)
-
-        else
-          statusBarIcon?.setStatus()
-          today = new Date()
-          statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
-      )
       lastHeartbeat = time
       lastFile = currentFile
+
+      log.debug python + ' ' + args.join(' ')
+      executeHeartbeatProcess python, args, 0
+
+executeHeartbeatProcess = (python, args, tries) ->
+  max_retries = 5
+  try
+    proc = child_process.execFile(python, args, (error, stdout, stderr) ->
+      if error?
+        if stderr? and stderr != ''
+          log.warn stderr
+        if stdout? and stdout != ''
+          log.warn stdout
+        if proc.exitCode == 102
+          msg = null
+          status = null
+          title = 'WakaTime Offline, coding activity will sync when online.'
+        else if proc.exitCode == 103
+          msg = 'An error occured while parsing ~/.wakatime.cfg. Check ~/.wakatime.log for more info.'
+          status = 'Error'
+          title = msg
+        else if proc.exitCode == 104
+          msg = 'Invalid API Key. Make sure your API Key is correct!'
+          status = 'Error'
+          title = msg
+        else
+          msg = error
+          status = 'Error'
+          title = 'Unknown Error (' + proc.exitCode + '); Check your Dev Console and ~/.wakatime.log for more info.'
+
+        if msg?
+          log.warn msg
+        statusBarIcon?.setStatus(status)
+        statusBarIcon?.setTitle(title)
+
+      else
+        statusBarIcon?.setStatus()
+        today = new Date()
+        statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
+    )
+  catch e
+    tries++
+    retry_in = 2
+    if tries < max_retries
+      log.debug 'Failed to send heartbeat by executing wakatime-cli, will retry in ' + retry_in + ' seconds...'
+      setTimeout ->
+        executeHeartbeatProcess(python, args, tries)
+      , retry_in * 1000
+    else
+      log.error 'Failed to send heartbeat by executing wakatime-cli:'
+      log.error e
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
