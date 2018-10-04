@@ -537,13 +537,13 @@ executeHeartbeatProcess = (python, args, tries) ->
     tries++
     retry_in = 2
     if tries < max_retries
-      log.debug 'Failed to send heartbeat by executing wakatime-cli, will retry in ' + retry_in + ' seconds...'
+      log.debug 'Failed to send heartbeat when executing wakatime-cli background process, will retry in ' + retry_in + ' seconds...'
       setTimeout ->
         executeHeartbeatProcess(python, args, tries)
       , retry_in * 1000
     else
-      log.error 'Failed to send heartbeat by executing wakatime-cli:'
-      log.error e
+      log.error 'Failed to send heartbeat when executing wakatime-cli background process.'
+      throw e
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
