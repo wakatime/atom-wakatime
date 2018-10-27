@@ -287,7 +287,7 @@ pythonLocation = (callback, locations) ->
         '/usr/bin/python',
       ]
       i = 39
-      while i >= 26
+      while i >= 27
         locations.push '\\python' + i + '\\pythonw'
         locations.push '\\Python' + i + '\\pythonw'
         i--
