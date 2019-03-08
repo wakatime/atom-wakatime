@@ -3,6 +3,13 @@ History
 -------
 
 
+7.0.8 (2019-03-08)
+++++++++++++++++++
+
+- Prevent using old Anaconda python distributions because they parse arguments
+  containing spaces incorrectly.
+
+
 7.0.7 (2018-10-03)
 ++++++++++++++++++
 
