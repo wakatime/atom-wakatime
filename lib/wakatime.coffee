@@ -271,41 +271,72 @@ isPythonInstalled = (callback) ->
     callback(result?)
   )
 
-pythonLocation = (callback, locations) ->
+pythonLocation = (callback) ->
   if global.cachedPythonLocation?
     callback(global.cachedPythonLocation)
+    return
+
+  locations = [
+    __dirname + path.sep + 'python' + path.sep + 'pythonw',
+    'python3',
+    'pythonw',
+    'python',
+    '/usr/local/bin/python3',
+    '/usr/local/bin/python',
+    '/usr/bin/python3',
+    '/usr/bin/python',
+  ]
+  i = 39
+  while i >= 27
+    if i < 30 or i > 32
+      locations.push '\\python' + i + '\\pythonw'
+      locations.push '\\Python' + i + '\\pythonw'
+    i--
+
+  findPython(locations, callback)
+
+findPython = (locations, callback) ->
+  if locations.length is 0
+    callback(null)
+    return
+
+  binary = locations.shift()
+  log.debug 'Looking for python at: ' + binary
+
+  args = ['--version']
+  child_process.execFile(binary, args, (error, stdout, stderr) ->
+    output = stdout.toString() + stderr.toString()
+    if not error and isSupportedPythonVersion(binary, output)
+      global.cachedPythonLocation = binary
+      log.debug 'Valid python version: ' + output
+      callback(binary)
+    else
+      log.debug 'Invalid python version: ' + output
+      findPython(locations, callback)
+  )
+
+isSupportedPythonVersion = (binary, versionString) ->
+  # Only support Python 2.7+ because 2.6 has SSL problems
+  if binary.toLowerCase().includes('python26')
+    return false
+
+  anaconda = /continuum|anaconda/gi
+  isAnaconda = not not anaconda.test(versionString)
+  re = /python\s+(\d+)\.(\d+)\.(\d+)\s/gi
+  ver = re.exec(versionString)
+  if not ver?
+    return isAnaconda
+
+  # Older Ananconda python distributions not supported
+  if isAnaconda
+    if parseInt(ver[1]) >= 3 and parseInt(ver[2]) >= 5
+      return true
   else
-    if not locations?
-      locations = [
-        __dirname + path.sep + 'python' + path.sep + 'pythonw',
-        'python3',
-        'pythonw',
-        'python',
-        '/usr/local/bin/python3',
-        '/usr/local/bin/python',
-        '/usr/bin/python3',
-        '/usr/bin/python',
-      ]
-      i = 39
-      while i >= 27
-        locations.push '\\python' + i + '\\pythonw'
-        locations.push '\\Python' + i + '\\pythonw'
-        i--
-    args = ['--version']
-    if locations.length is 0
-      callback(null)
-      return
-    pattern = /\d+\.\d+/
-    location = locations[0]
-    child_process.execFile(location, args, (error, stdout, stderr) ->
-      if not error?
-        if stdout? and stdout.match(pattern) or stderr? and stderr.match(pattern)
-          global.cachedPythonLocation = location
-          callback(location)
-      else
-        locations.splice(0, 1)
-        pythonLocation(callback, locations)
-    )
+    # Only support Python 2.7+ because 2.6 has SSL problems
+    if parseInt(ver[1]) >= 2 or parseInt(ver[2]) >= 7
+      return true
+
+  return false
 
 installPython = (callback) ->
   pyVer = '3.5.2'
