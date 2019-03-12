@@ -3,6 +3,12 @@ History
 -------
 
 
+7.0.9 (2019-03-13)
+++++++++++++++++++
+
+- Add keywords to package for improved discoverability.
+
+
 7.0.8 (2019-03-08)
 ++++++++++++++++++
 
