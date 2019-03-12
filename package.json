@@ -1,20 +1,20 @@
 {
   "name": "wakatime",
   "description": "Fitbit for programmers. Get automated time tracking and metrics about your programming.",
-  "version": "7.0.8",
+  "version": "7.0.9",
   "author": "WakaTime <support@wakatime.com>",
   "keywords": [
-      "productivity",
-      "time tracking",
-      "analytics",
-      "coding activity",
-      "project",
-      "goals",
-      "pomodoro",
-      "timer",
-      "time",
-      "stats",
-      "git"
+    "productivity",
+    "time tracking",
+    "analytics",
+    "coding activity",
+    "project",
+    "goals",
+    "pomodoro",
+    "timer",
+    "time",
+    "stats",
+    "git"
   ],
   "configSchema": {
     "apikey": {
