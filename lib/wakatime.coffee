@@ -143,6 +143,7 @@ finishActivation = () ->
 
   statusBarIcon?.setTitle('WakaTime ready')
   statusBarIcon?.setStatus(cachedToday)
+  getToday()
   log.debug 'Finished initializing WakaTime.'
 
 settingChangedHandler = (settings, initial) ->
