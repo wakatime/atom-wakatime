@@ -40,8 +40,9 @@ class StatusBarTileView extends HTMLElement
     @tooltip?.dispose()
     @classList = ''
 
-  setStatus: (content) ->
-    @msg?.textContent = content or ''
+  setStatus: (content, override_errors = true) ->
+    if override_errors or /^error/i.test(@msg?.textContent or '')
+      @msg?.textContent = content or ''
 
   setTitle: (text) ->
     @tooltip?.dispose()

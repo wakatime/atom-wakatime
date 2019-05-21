@@ -24,6 +24,9 @@ log = null
 packageVersion = null
 lastHeartbeat = 0
 lastFile = ''
+lastTodayFetch = 0
+fetchTodayInterval = 60000
+cachedToday = ''
 statusBarIcon = null
 pluginReady = false
 
@@ -55,7 +58,7 @@ module.exports =
 
     if pluginReady
       statusBarIcon.setTitle('WakaTime ready')
-      statusBarIcon.setStatus()
+      statusBarIcon.setStatus(cachedToday)
 
   deactivate: ->
     @statusBarTile?.destroy()
@@ -139,7 +142,7 @@ finishActivation = () ->
     statusBarIcon?.hide()
 
   statusBarIcon?.setTitle('WakaTime ready')
-  statusBarIcon?.setStatus()
+  statusBarIcon?.setStatus(cachedToday)
   log.debug 'Finished initializing WakaTime.'
 
 settingChangedHandler = (settings, initial) ->
@@ -527,6 +530,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
       log.debug python + ' ' + args.join(' ')
       executeHeartbeatProcess python, args, 0
+      getToday()
 
 executeHeartbeatProcess = (python, args, tries) ->
   max_retries = 5
@@ -560,7 +564,7 @@ executeHeartbeatProcess = (python, args, tries) ->
         statusBarIcon?.setTitle(title)
 
       else
-        statusBarIcon?.setStatus()
+        statusBarIcon?.setStatus(cachedToday)
         today = new Date()
         statusBarIcon?.setTitle('Last heartbeat sent ' + formatDate(today))
     )
@@ -575,6 +579,35 @@ executeHeartbeatProcess = (python, args, tries) ->
     else
       log.error 'Failed to send heartbeat when executing wakatime-cli background process.'
       throw e
+
+getToday = () ->
+  cutoff = Date.now() - fetchTodayInterval
+  if lastTodayFetch > cutoff
+    return
+  lastTodayFetch = Date.now()
+
+  pythonLocation (python) ->
+    return unless python?
+
+    args = [cliLocation(), '--today', '--plugin', 'atom-wakatime/' + packageVersion]
+    if atom.config.get 'wakatime.disableSSLCertVerify'
+      args.push('--no-ssl-verify')
+    args.push('--config')
+    args.push(path.join getUserHome(), '.wakatime.cfg')
+
+    try
+      proc = child_process.execFile(python, args, (error, stdout, stderr) ->
+        if error?
+          if stderr? and stderr != ''
+            log.debug stderr
+          if stdout? and stdout != ''
+            log.debug stderr
+        else
+          cachedToday = 'Today: ' + stdout
+          statusBarIcon?.setStatus(cachedToday, true)
+      )
+    catch e
+      log.debug e
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
