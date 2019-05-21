@@ -3,6 +3,12 @@ History
 -------
 
 
+7.1.1 (2019-05-21)
+++++++++++++++++++
+
+- Fetch today coding time for status bar when Atom starts.
+
+
 7.1.0 (2019-05-21)
 ++++++++++++++++++
 
