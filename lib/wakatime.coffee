@@ -326,7 +326,7 @@ isSupportedPythonVersion = (binary, versionString) ->
 
   anaconda = /continuum|anaconda/gi
   isAnaconda = not not anaconda.test(versionString)
-  /python\s+(\d+)\.(\d+)\.(\d+)([a-z0-9]+)?\s/gi
+  re = /python\s+(\d+)\.(\d+)\.(\d+)([a-z0-9]+)?\s/gi
   ver = re.exec(versionString)
   if not ver?
     return isAnaconda
