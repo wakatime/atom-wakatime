@@ -503,7 +503,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
   if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
     pythonLocation (python) ->
       return unless python?
-      args = [cliLocation(), '--file', currentFile, '--plugin', 'atom-wakatime/' + packageVersion]
+      args = ['-m', 'wakatime.cli', '--file', currentFile, '--plugin', 'atom-wakatime/' + packageVersion]
       if isWrite
         args.push('--write')
       if lineno?
@@ -530,13 +530,14 @@ sendHeartbeat = (file, lineno, isWrite) ->
       lastFile = currentFile
 
       log.debug python + ' ' + args.join(' ')
+      opts = { cwd: path.dirname(path.dirname(cliLocation())) }
       executeHeartbeatProcess python, args, 0
       getToday()
 
-executeHeartbeatProcess = (python, args, tries) ->
+executeHeartbeatProcess = (python, args, opts, tries) ->
   max_retries = 5
   try
-    proc = child_process.execFile(python, args, (error, stdout, stderr) ->
+    proc = child_process.execFile(python, args, opts, (error, stdout, stderr) ->
       if error?
         if stderr? and stderr != ''
           log.warn stderr
@@ -575,7 +576,7 @@ executeHeartbeatProcess = (python, args, tries) ->
     if tries < max_retries
       log.debug 'Failed to send heartbeat when executing wakatime-cli background process, will retry in ' + retry_in + ' seconds...'
       setTimeout ->
-        executeHeartbeatProcess(python, args, tries)
+        executeHeartbeatProcess(python, args, opts, tries)
       , retry_in * 1000
     else
       log.error 'Failed to send heartbeat when executing wakatime-cli background process.'
