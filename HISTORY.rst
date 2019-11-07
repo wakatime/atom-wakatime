@@ -3,6 +3,14 @@ History
 -------
 
 
+7.1.2 (2019-11-07)
+++++++++++++++++++
+
+- Allow python rc versions.
+  `#91 <https://github.com/wakatime/atom-wakatime/issues/91>`_
+  `#93 <https://github.com/wakatime/atom-wakatime/issues/93>`_
+
+
 7.1.1 (2019-05-21)
 ++++++++++++++++++
 
