@@ -1,6 +1,6 @@
-[![Coding time tracker](https://wakatime.com/badge/github/wakatime/atom-wakatime.svg)](https://wakatime.com/badge/github/wakatime/atom-wakatime)
-
 # atom-wakatime
+
+[![Coding time tracker](https://wakatime.com/badge/github/wakatime/atom-wakatime.svg)](https://wakatime.com/badge/github/wakatime/atom-wakatime)
 
 Quantify your coding inside GitHub's Atom editor.
 
