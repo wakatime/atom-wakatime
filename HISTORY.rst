@@ -3,6 +3,13 @@ History
 -------
 
 
+7.2.0 (2020-02-09)
+++++++++++++++++++
+
+- Detect python in Windows LocalAppData install locations.
+- Upgrade embedded python to v3.8.1.
+
+
 7.1.2 (2019-11-07)
 ++++++++++++++++++
 
