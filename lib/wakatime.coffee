@@ -343,7 +343,7 @@ isSupportedPythonVersion = (binary, versionString) ->
   return false
 
 installPython = (callback) ->
-  pyVer = '3.5.2'
+  pyVer = '3.8.1'
   arch = 'win32'
   if os.arch().indexOf('x64') > -1
     arch = 'amd64'
