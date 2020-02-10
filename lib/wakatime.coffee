@@ -14,6 +14,7 @@ AdmZip = null
 fs = null
 os = null
 path = null
+process = null
 child_process = null
 request = null
 rimraf = null
@@ -214,6 +215,7 @@ loadDependencies = ->
   fs = require 'fs'
   os = require 'os'
   path = require 'path'
+  process = require 'process'
   child_process = require 'child_process'
   request = require 'request'
   rimraf = require 'rimraf'
@@ -290,12 +292,16 @@ pythonLocation = (callback) ->
     '/usr/bin/python3',
     '/usr/bin/python',
   ]
-  i = 39
-  while i >= 27
-    if i < 30 or i > 32
-      locations.push '\\python' + i + '\\pythonw'
-      locations.push '\\Python' + i + '\\pythonw'
-    i--
+  if os.type() is 'Windows_NT'
+    i = 39
+    while i >= 27
+      if i < 30 or i > 32
+        locations.push '\\python' + i + '\\pythonw'
+        locations.push '\\Python' + i + '\\pythonw'
+        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '\\pythonw');
+        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '-32\\pythonw');
+        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '-64\\pythonw');
+      i--
 
   findPython(locations, callback)
 
