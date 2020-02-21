@@ -159,14 +159,14 @@ settingChangedHandler = (settings, initial) ->
   apiKey = settings.apikey
   if isValidApiKey(apiKey)
     atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
-    atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+    atom.config.set 'wakatime.apikey', 'Saved in your ' + atom.config.get 'wakatime.configfile' + ' file'
     saveApiKey apiKey
   else if initial
     atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
     atom.config.set 'wakatime.apikey', 'Enter your api key...'
 
 saveApiKey = (apiKey) ->
-  configFile = path.join getUserHome(), '.wakatime.cfg'
+  configFile = path.join getUserHome(), atom.config.get 'wakatime.configfile'
   fs.readFile configFile, 'utf-8', (err, inp) ->
     if err?
       log.debug 'Error: could not read wakatime config file'
@@ -222,7 +222,7 @@ loadDependencies = ->
   ini = require 'ini'
 
 setupConfigs = ->
-  configFile = path.join getUserHome(), '.wakatime.cfg'
+  configFile = path.join getUserHome(), atom.config.get 'wakatime.configfile'
   fs.readFile configFile, 'utf-8', (err, configContent) ->
     if err?
       log.debug 'Error: could not read wakatime config file'
@@ -231,7 +231,7 @@ setupConfigs = ->
     commonConfigs = ini.decode configContent
     if commonConfigs? and commonConfigs.settings? and isValidApiKey(commonConfigs.settings.api_key)
       atom.config.set 'wakatime.apikey', '' # clear setting so it updates in UI
-      atom.config.set 'wakatime.apikey', 'Saved in your ~/.wakatime.cfg file'
+      atom.config.set 'wakatime.apikey', 'Saved in your config file'
     else
       settingChangedHandler atom.config.get('wakatime'), true
 
@@ -522,7 +522,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
       # fix for wakatime/atom-wakatime#65
       args.push('--config')
-      args.push(path.join getUserHome(), '.wakatime.cfg')
+      args.push(path.join getUserHome(), atom.config.get 'wakatime.configfile' )
 
       if atom.project.contains(currentFile)
         for rootDir in atom.project.rootDirectories
@@ -553,7 +553,7 @@ executeHeartbeatProcess = (python, args, tries) ->
           status = null
           title = 'WakaTime Offline, coding activity will sync when online.'
         else if proc.exitCode == 103
-          msg = 'An error occured while parsing ~/.wakatime.cfg. Check ~/.wakatime.log for more info.'
+          msg = 'An error occured while parsing ' + atom.config.get 'wakatime.configfile' + ' . Check ~/.wakatime.log for more info.'
           status = 'Error'
           title = msg
         else if proc.exitCode == 104
@@ -600,7 +600,7 @@ getToday = () ->
     if atom.config.get 'wakatime.disableSSLCertVerify'
       args.push('--no-ssl-verify')
     args.push('--config')
-    args.push(path.join getUserHome(), '.wakatime.cfg')
+    args.push(path.join getUserHome(), atom.config.get 'wakatime.configfile')
 
     try
       proc = child_process.execFile(python, args, (error, stdout, stderr) ->

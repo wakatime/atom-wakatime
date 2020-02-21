@@ -17,6 +17,13 @@
     "git"
   ],
   "configSchema": {
+    "configfile": {
+      "title": "Config File Location",
+      "description": "The place of your config file relative to your home folder",
+      "type": "string",
+      "default": ".wakatime.cfg",
+      "order": 0
+    },
     "apikey": {
       "title": "Api Key",
       "description": "Your secret key from https://wakatime.com/settings.",
