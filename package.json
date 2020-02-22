@@ -1,6 +1,6 @@
 {
   "name": "wakatime",
-  "description": "Fitbit for programmers. Get automated time tracking and metrics about your programming.",
+  "description": "The developer dashboard. Automatic time tracking and metrics for programmers.",
   "version": "7.2.0",
   "author": "WakaTime <support@wakatime.com>",
   "keywords": [
@@ -71,10 +71,8 @@
     }
   },
   "dependencies": {
-    "adm-zip": "0.4.11",
     "ini": "^1.3.4",
     "request": "2.88.0",
-    "rimraf": "2.6.2"
   },
   "engines": {
     "atom": ">0.50.0"

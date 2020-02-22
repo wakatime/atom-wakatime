@@ -10,14 +10,12 @@ StatusBarTileView = require './status-bar-tile-view'
 Logger = require './logger'
 
 # dependencies lazy-loaded to improve startup time
-AdmZip = null
 fs = null
 os = null
 path = null
 process = null
 child_process = null
 request = null
-rimraf = null
 ini = null
 
 # package-global attributes
@@ -44,7 +42,7 @@ module.exports =
     loadDependencies()
     setupConfigs()
     @settingChangedObserver = atom.config.observe 'wakatime', settingChangedHandler
-    checkPython()
+    checkCLI()
 
   consumeStatusBar: (statusBar) ->
     statusBarIcon = new StatusBarTileView()
@@ -65,17 +63,6 @@ module.exports =
     @statusBarTile?.destroy()
     statusBarIcon?.destroy()
     @settingChangedObserver?.dispose()
-
-checkPython = () ->
-  isPythonInstalled((installed) ->
-    if not installed
-      if os.type() is 'Windows_NT'
-        installPython(checkCLI)
-      else
-        window.alert('Please install Python (https://www.python.org/downloads/) and restart Atom to enable the WakaTime plugin.')
-    else
-      checkCLI()
-  )
 
 checkCLI = () ->
   if not isCLIInstalled()
@@ -208,17 +195,15 @@ saveApiKey = (apiKey) ->
         statusBarIcon?.setTitle(msg)
 
 getUserHome = ->
-  process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
+  process.env[if os.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
 
 loadDependencies = ->
-  AdmZip = require 'adm-zip'
   fs = require 'fs'
   os = require 'os'
   path = require 'path'
   process = require 'process'
   child_process = require 'child_process'
   request = require 'request'
-  rimraf = require 'rimraf'
   ini = require 'ini'
 
 setupConfigs = ->
@@ -272,139 +257,30 @@ setupEventHandlers = (callback) ->
     if callback?
       callback()
 
-isPythonInstalled = (callback) ->
-  pythonLocation((result) ->
-    callback(result?)
-  )
-
-pythonLocation = (callback) ->
-  if global.cachedPythonLocation?
-    callback(global.cachedPythonLocation)
-    return
-
-  locations = [
-    __dirname + path.sep + 'python' + path.sep + 'pythonw',
-    'python3',
-    'pythonw',
-    'python',
-    '/usr/local/bin/python3',
-    '/usr/local/bin/python',
-    '/usr/bin/python3',
-    '/usr/bin/python',
-  ]
-  if os.type() is 'Windows_NT'
-    i = 39
-    while i >= 27
-      if i < 30 or i > 32
-        locations.push '\\python' + i + '\\pythonw'
-        locations.push '\\Python' + i + '\\pythonw'
-        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '\\pythonw');
-        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '-32\\pythonw');
-        locations.push(process.env.LOCALAPPDATA + '\\Programs\Python' + i + '-64\\pythonw');
-      i--
-
-  findPython(locations, callback)
-
-findPython = (locations, callback) ->
-  if locations.length is 0
-    callback(null)
-    return
-
-  binary = locations.shift()
-  log.debug 'Looking for python at: ' + binary
-
-  args = ['--version']
-  child_process.execFile(binary, args, (error, stdout, stderr) ->
-    output = stdout.toString() + stderr.toString()
-    if not error and isSupportedPythonVersion(binary, output)
-      global.cachedPythonLocation = binary
-      log.debug 'Valid python version: ' + output
-      callback(binary)
-    else
-      log.debug 'Invalid python version: ' + output
-      findPython(locations, callback)
-  )
-
-isSupportedPythonVersion = (binary, versionString) ->
-  # Only support Python 2.7+ because 2.6 has SSL problems
-  if binary.toLowerCase().includes('python26')
-    return false
-
-  anaconda = /continuum|anaconda/gi
-  isAnaconda = not not anaconda.test(versionString)
-  re = /python\s+(\d+)\.(\d+)\.(\d+)([a-z0-9]+)?\s/gi
-  ver = re.exec(versionString)
-  if not ver?
-    return isAnaconda
-
-  # Older Ananconda python distributions not supported
-  if isAnaconda
-    if parseInt(ver[1]) >= 3 and parseInt(ver[2]) >= 5
-      return true
-  else
-    # Only support Python 2.7+ because 2.6 has SSL problems
-    if parseInt(ver[1]) >= 2 or parseInt(ver[2]) >= 7
-      return true
-
-  return false
-
-installPython = (callback) ->
-  pyVer = '3.8.1'
-  arch = 'win32'
-  if os.arch().indexOf('x64') > -1
-    arch = 'amd64'
-  url = 'https://www.python.org/ftp/python/' + pyVer + '/python-' + pyVer + '-embed-' + arch + '.zip'
-
-  log.debug 'downloading python...'
-  statusBarIcon?.setStatus('downloading python...')
-
-  zipFile = __dirname + path.sep + 'python.zip'
-  downloadFile(url, zipFile, ->
-
-    log.debug 'extracting python...'
-    statusBarIcon?.setStatus('extracting python...')
-
-    unzip(zipFile, __dirname + path.sep + 'python', ->
-      fs.unlink(zipFile, (e) ->
-        if e?
-          log.warn e
-        log.debug 'Finished installing python.'
-        if callback?
-          callback()
-      )
-    )
-  )
-
 isCLIInstalled = () ->
   return fs.existsSync(cliLocation())
 
 isCLILatest = (callback) ->
-  pythonLocation((python) ->
-    if python?
-      args = [cliLocation(), '--version']
-      child_process.execFile(python, args, (error, stdout, stderr) ->
-        if not error?
-          currentVersion = stderr.trim()
-          log.debug 'Current wakatime-cli version is ' + currentVersion
-          log.debug 'Checking for updates to wakatime-cli...'
-          getLatestCliVersion((latestVersion) ->
-            if currentVersion == latestVersion
-              log.debug 'wakatime-cli is up to date.'
-              if callback?
-                callback(true)
-            else
-              if latestVersion?
-                log.debug 'Found an updated wakatime-cli v' + latestVersion
-                if callback?
-                  callback(false)
-              else
-                log.debug 'Unable to find latest wakatime-cli version from GitHub.'
-                if callback?
-                  callback(true)
-          )
-        else
+  args = ['--version']
+  child_process.execFile(cliLocation(), args, (error, stdout, stderr) ->
+    if not error?
+      currentVersion = stderr.trim()
+      log.debug 'Current wakatime-cli version is ' + currentVersion
+      log.debug 'Checking for updates to wakatime-cli...'
+      getLatestCliVersion((latestVersion) ->
+        if currentVersion == latestVersion
+          log.debug 'wakatime-cli is up to date.'
           if callback?
-            callback(false)
+            callback(true)
+        else
+          if latestVersion?
+            log.debug 'Found an updated wakatime-cli v' + latestVersion
+            if callback?
+              callback(false)
+          else
+            log.debug 'Unable to find latest wakatime-cli version.'
+            if callback?
+              callback(true)
       )
     else
       if callback?
@@ -414,56 +290,43 @@ isCLILatest = (callback) ->
 getLatestCliVersion = (callback) ->
   options =
     strictSSL: not atom.config.get('wakatime.disableSSLCertVerify')
-    url: 'https://raw.githubusercontent.com/wakatime/wakatime/master/wakatime/__about__.py'
+    url: s3BucketUrl() + 'current_version.txt'
   request.get(options, (error, response, body) ->
     version = null
     if !error and response.statusCode == 200
-      re = new RegExp(/__version_info__ = \('([0-9]+)', '([0-9]+)', '([0-9]+)'\)/g)
-      for line in body.split('\n')
-        match = re.exec(line)
-        if match?
-          version = match[1] + '.' + match[2] + '.' + match[3]
+      version = body.trim()
     if callback?
       callback(version)
   )
 
-cliLocation = () ->
-  return path.join cliFolder(), 'cli.py'
-
 cliFolder = () ->
-  dir = path.join __dirname, 'wakatime-master', 'wakatime'
-  return dir
+  return __dirname
+
+cliLocation = () ->
+  return path.join cliFolder(), 'wakatime'
 
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
   statusBarIcon?.setStatus('downloading wakatime-cli...')
-  url = 'https://github.com/wakatime/wakatime/archive/master.zip'
-  zipFile = __dirname + path.sep + 'wakatime-master.zip'
-  downloadFile(url, zipFile, ->
-    extractCLI(zipFile, callback)
-  )
-
-extractCLI = (zipFile, callback) ->
-  log.debug 'Extracting wakatime-master.zip file...'
-  statusBarIcon?.setStatus('extracting wakatime-cli...')
-  removeCLI(->
-    unzip(zipFile, __dirname, callback)
-  )
-
-removeCLI = (callback) ->
-  if fs.existsSync(__dirname + path.sep + 'wakatime-master')
-    try
-      rimraf(__dirname + path.sep + 'wakatime-master', ->
-        if callback?
-          callback()
-      )
-    catch e
-      log.warn e
-      if callback?
-        callback()
-  else
+  ext = if os.platform == 'win32' then '.exe' else ''
+  url = s3BucketUrl() + 'wakatime' + ext
+  localFile = __dirname + path.sep + 'wakatime' + ext
+  downloadFile(url, localFile, () ->
+    fs.chmodSync(localFile, 0o755)
     if callback?
       callback()
+  )
+
+architecture = () ->
+  return '32' if os.arch().indexOf('32') > -1
+  return '64'
+
+s3BucketUrl = () ->
+  prefix = 'https://wakatime-cli.s3-us-west-2.amazonaws.com/'
+  p = os.platform()
+  return prefix + 'mac-x86-64/' if p == 'darwin'
+  return prefix + 'windows-x86-' + architecture() + '/' if p == 'win32'
+  return prefix + 'linux-x86-64/'
 
 downloadFile = (url, outputFile, callback) ->
   options =
@@ -479,21 +342,6 @@ downloadFile = (url, outputFile, callback) ->
     )
   )
 
-unzip = (file, outputDir, callback) ->
-  if fs.existsSync(file)
-    try
-      zip = new AdmZip(file)
-      zip.extractAllTo(outputDir, true)
-    catch e
-      log.warn e
-    finally
-      fs.unlink(file, (err) ->
-        if err?
-          log.warn err
-        if callback?
-          callback()
-      )
-
 sendHeartbeat = (file, lineno, isWrite) ->
   if (not file.path? or file.path is undefined) and (not file.getPath? or file.getPath() is undefined)
     log.debug 'Skipping file because path does not exist: ' + file.path
@@ -507,42 +355,40 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
   time = Date.now()
   if isWrite or enoughTimePassed(time) or lastFile isnt currentFile
-    pythonLocation (python) ->
-      return unless python?
-      args = [cliLocation(), '--file', currentFile, '--plugin', 'atom-wakatime/' + packageVersion]
-      if isWrite
-        args.push('--write')
-      if lineno?
-        args.push('--lineno')
-        args.push(lineno)
-      if atom.config.get 'wakatime.debug'
-        args.push('--verbose')
-      if atom.config.get 'wakatime.disableSSLCertVerify'
-        args.push('--no-ssl-verify')
+    args = ['--file', currentFile, '--plugin', 'atom-wakatime/' + packageVersion]
+    if isWrite
+      args.push('--write')
+    if lineno?
+      args.push('--lineno')
+      args.push(lineno)
+    if atom.config.get 'wakatime.debug'
+      args.push('--verbose')
+    if atom.config.get 'wakatime.disableSSLCertVerify'
+      args.push('--no-ssl-verify')
 
-      # fix for wakatime/atom-wakatime#65
-      args.push('--config')
-      args.push(path.join getUserHome(), '.wakatime.cfg')
+    # fix for wakatime/atom-wakatime#65
+    args.push('--config')
+    args.push(path.join getUserHome(), '.wakatime.cfg')
 
-      if atom.project.contains(currentFile)
-        for rootDir in atom.project.rootDirectories
-          realPath = rootDir.realPath
-          if currentFile.indexOf(realPath) > -1
-            args.push('--alternate-project')
-            args.push(path.basename(realPath))
-            break
+    if atom.project.contains(currentFile)
+      for rootDir in atom.project.rootDirectories
+        realPath = rootDir.realPath
+        if currentFile.indexOf(realPath) > -1
+          args.push('--alternate-project')
+          args.push(path.basename(realPath))
+          break
 
-      lastHeartbeat = time
-      lastFile = currentFile
+    lastHeartbeat = time
+    lastFile = currentFile
 
-      log.debug python + ' ' + args.join(' ')
-      executeHeartbeatProcess python, args, 0
-      getToday()
+    log.debug cliLocation() + ' ' + args.join(' ')
+    executeHeartbeatProcess cliLocation(), args, 0
+    getToday()
 
-executeHeartbeatProcess = (python, args, tries) ->
+executeHeartbeatProcess = (binary, args, tries) ->
   max_retries = 5
   try
-    proc = child_process.execFile(python, args, (error, stdout, stderr) ->
+    proc = child_process.execFile(binary, args, (error, stdout, stderr) ->
       if error?
         if stderr? and stderr != ''
           log.warn stderr
@@ -581,7 +427,7 @@ executeHeartbeatProcess = (python, args, tries) ->
     if tries < max_retries
       log.debug 'Failed to send heartbeat when executing wakatime-cli background process, will retry in ' + retry_in + ' seconds...'
       setTimeout ->
-        executeHeartbeatProcess(python, args, tries)
+        executeHeartbeatProcess(binary, args, tries)
       , retry_in * 1000
     else
       log.error 'Failed to send heartbeat when executing wakatime-cli background process.'
@@ -593,28 +439,25 @@ getToday = () ->
     return
   lastTodayFetch = Date.now()
 
-  pythonLocation (python) ->
-    return unless python?
+  args = ['--today', '--plugin', 'atom-wakatime/' + packageVersion]
+  if atom.config.get 'wakatime.disableSSLCertVerify'
+    args.push('--no-ssl-verify')
+  args.push('--config')
+  args.push(path.join getUserHome(), '.wakatime.cfg')
 
-    args = [cliLocation(), '--today', '--plugin', 'atom-wakatime/' + packageVersion]
-    if atom.config.get 'wakatime.disableSSLCertVerify'
-      args.push('--no-ssl-verify')
-    args.push('--config')
-    args.push(path.join getUserHome(), '.wakatime.cfg')
-
-    try
-      proc = child_process.execFile(python, args, (error, stdout, stderr) ->
-        if error?
-          if stderr? and stderr != ''
-            log.debug stderr
-          if stdout? and stdout != ''
-            log.debug stderr
-        else
-          cachedToday = 'Today: ' + stdout
-          statusBarIcon?.setStatus(cachedToday, true)
-      )
-    catch e
-      log.debug e
+  try
+    proc = child_process.execFile(cliLocation(), args, (error, stdout, stderr) ->
+      if error?
+        if stderr? and stderr != ''
+          log.debug stderr
+        if stdout? and stdout != ''
+          log.debug stderr
+      else
+        cachedToday = 'Today: ' + stdout
+        statusBarIcon?.setStatus(cachedToday, true)
+    )
+  catch e
+    log.debug e
 
 fileIsIgnored = (file) ->
   if endsWith(file, 'COMMIT_EDITMSG') or endsWith(file, 'PULLREQ_EDITMSG') or endsWith(file, 'MERGE_MSG') or endsWith(file, 'TAG_EDITMSG')
@@ -662,18 +505,3 @@ formatDate = (date) ->
   if (minute < 10)
     minute = '0' + minute
   return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' ' + hour + ':' + minute + ' ' + ampm
-
-debug = (callback) ->
-  if fs.existsSync(__dirname + path.sep + 'wakatime-master')
-    try
-      rimraf(__dirname + path.sep + 'wakatime-master', ->
-        if callback?
-          callback()
-      )
-    catch e
-      log.warn e
-      if callback?
-        callback()
-  else
-    if callback?
-      callback()
