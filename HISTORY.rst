@@ -3,6 +3,12 @@ History
 -------
 
 
+8.0.1 (2020-02-22)
+++++++++++++++++++
+
+- Fix filename conflict between wakatime-cli and wakatime.coffee.
+
+
 8.0.0 (2020-02-22)
 ++++++++++++++++++
 
