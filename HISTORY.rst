@@ -3,6 +3,12 @@ History
 -------
 
 
+8.0.2 (2020-02-22)
+++++++++++++++++++
+
+- Add uuid dependency to force latest version and prevent Buffer warning.
+
+
 8.0.1 (2020-02-22)
 ++++++++++++++++++
 
