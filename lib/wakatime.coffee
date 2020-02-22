@@ -312,7 +312,8 @@ installCLI = (callback) ->
   url = s3BucketUrl() + 'wakatime' + ext
   localFile = __dirname + path.sep + 'wakatime-cli' + ext
   downloadFile(url, localFile, () ->
-    fs.chmodSync(localFile, 0o755)
+    if os.platform != 'win32'
+      fs.chmodSync(localFile, 0o755)
     if callback?
       callback()
   )
