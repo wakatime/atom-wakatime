@@ -303,14 +303,14 @@ cliFolder = () ->
   return __dirname
 
 cliLocation = () ->
-  return path.join cliFolder(), 'wakatime'
+  return path.join cliFolder(), 'wakatime-cli'
 
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
   statusBarIcon?.setStatus('downloading wakatime-cli...')
   ext = if os.platform == 'win32' then '.exe' else ''
   url = s3BucketUrl() + 'wakatime' + ext
-  localFile = __dirname + path.sep + 'wakatime' + ext
+  localFile = __dirname + path.sep + 'wakatime-cli' + ext
   downloadFile(url, localFile, () ->
     fs.chmodSync(localFile, 0o755)
     if callback?
