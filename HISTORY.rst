@@ -3,6 +3,12 @@ History
 -------
 
 
+9.0.0 (2020-02-23)
+++++++++++++++++++
+
+- Download wakatime-cli standalone as zipped folder for improved performance.
+
+
 8.0.6 (2020-02-22)
 ++++++++++++++++++
 
