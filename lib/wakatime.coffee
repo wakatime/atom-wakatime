@@ -258,8 +258,7 @@ setupEventHandlers = (callback) ->
       callback()
 
 isCLIInstalled = () ->
-  ext = if process.platform == 'win32' then '.exe' else ''
-  return fs.existsSync(cliLocation() + ext)
+  return fs.existsSync(cliLocation())
 
 isCLILatest = (callback) ->
   args = ['--version']
@@ -304,7 +303,8 @@ cliFolder = () ->
   return __dirname
 
 cliLocation = () ->
-  return path.join cliFolder(), 'wakatime-cli'
+  ext = if process.platform == 'win32' then '.exe' else ''
+  return path.join cliFolder(), 'wakatime-cli' + ext
 
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
