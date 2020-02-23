@@ -344,6 +344,9 @@ downloadFile = (url, outputFile, callback) ->
   )
 
 sendHeartbeat = (file, lineno, isWrite) ->
+  if not isCLIInstalled()
+    return
+
   if (not file.path? or file.path is undefined) and (not file.getPath? or file.getPath() is undefined)
     log.debug 'Skipping file because path does not exist: ' + file.path
     return
@@ -382,8 +385,9 @@ sendHeartbeat = (file, lineno, isWrite) ->
     lastHeartbeat = time
     lastFile = currentFile
 
-    log.debug cliLocation() + ' ' + args.join(' ')
-    executeHeartbeatProcess cliLocation(), args, 0
+    cli = cliLocation()
+    log.debug cli + ' ' + args.join(' ')
+    executeHeartbeatProcess cli, args, 0
     getToday()
 
 executeHeartbeatProcess = (binary, args, tries) ->
@@ -435,6 +439,9 @@ executeHeartbeatProcess = (binary, args, tries) ->
       throw e
 
 getToday = () ->
+  if not isCLIInstalled()
+    return
+
   cutoff = Date.now() - fetchTodayInterval
   if lastTodayFetch > cutoff
     return
