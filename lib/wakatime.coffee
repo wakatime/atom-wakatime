@@ -324,7 +324,7 @@ architecture = () ->
 
 s3BucketUrl = () ->
   prefix = 'https://wakatime-cli.s3-us-west-2.amazonaws.com/'
-  p = process.platform()
+  p = process.platform
   return prefix + 'mac-x86-64/' if p == 'darwin'
   return prefix + 'windows-x86-' + architecture() + '/' if p == 'win32'
   return prefix + 'linux-x86-64/'
