@@ -311,7 +311,7 @@ installCLI = (callback) ->
   statusBarIcon?.setStatus('downloading wakatime-cli...')
   ext = if process.platform == 'win32' then '.exe' else ''
   url = s3BucketUrl() + 'wakatime' + ext
-  localFile = __dirname + path.sep + 'wakatime-cli' + ext
+  localFile = cliLocation()
   downloadFile(url, localFile, () ->
     if process.platform != 'win32'
       fs.chmodSync(localFile, 0o755)
