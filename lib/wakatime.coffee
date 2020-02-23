@@ -10,12 +10,14 @@ StatusBarTileView = require './status-bar-tile-view'
 Logger = require './logger'
 
 # dependencies lazy-loaded to improve startup time
+AdmZip = null
 fs = null
 os = null
 path = null
 process = null
 child_process = null
 request = null
+rimraf = null
 ini = null
 
 # package-global attributes
@@ -95,7 +97,7 @@ checkCLI = () ->
     )
 
 getLastCheckedForUpdates = (callback) ->
-  filePath = path.join cliFolder(), 'last-checked-for-updates'
+  filePath = path.join resourcesFolder(), 'last-checked-for-updates'
   if fs.existsSync(filePath)
     fs.readFile filePath, 'utf-8', (err, contents) ->
       if err?
@@ -114,7 +116,7 @@ getLastCheckedForUpdates = (callback) ->
       callback(0)
 
 setLastCheckedForUpdates = (lastChecked) ->
-  filePath = path.join cliFolder(), 'last-checked-for-updates'
+  filePath = path.join resourcesFolder(), 'last-checked-for-updates'
   fs.writeFile filePath, lastChecked.toString(), {encoding: 'utf-8'}, (err) ->
     if err?
       log.debug 'Unable to save last checked for updates timestamp.'
@@ -198,12 +200,14 @@ getUserHome = ->
   process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
 
 loadDependencies = ->
+  AdmZip = require 'adm-zip'
   fs = require 'fs'
   os = require 'os'
   path = require 'path'
   process = require 'process'
   child_process = require 'child_process'
   request = require 'request'
+  rimraf = require 'rimraf'
   ini = require 'ini'
 
 setupConfigs = ->
@@ -299,25 +303,63 @@ getLatestCliVersion = (callback) ->
       callback(version)
   )
 
-cliFolder = () ->
+resourcesFolder = () ->
   return __dirname
 
 cliLocation = () ->
   ext = if process.platform == 'win32' then '.exe' else ''
-  return path.join cliFolder(), 'wakatime-cli' + ext
+  return path.join resourcesFolder(), 'wakatime-cli', 'wakatime-cli' + ext
 
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
   statusBarIcon?.setStatus('downloading wakatime-cli...')
-  ext = if process.platform == 'win32' then '.exe' else ''
-  url = s3BucketUrl() + 'wakatime' + ext
-  localFile = cliLocation()
-  downloadFile(url, localFile, () ->
-    if process.platform != 'win32'
-      fs.chmodSync(localFile, 0o755)
+  url = s3BucketUrl() + 'wakatime-cli.zip'
+  zipFile = path.join resourcesFolder(), 'wakatime-cli.zip'
+  downloadFile(url, zipFile, ->
+    extractCLI(zipFile, ->
+      if process.platform != 'win32'
+        fs.chmodSync(cliLocation(), 0o755)
+      if callback?
+        callback()
+    )
+  )
+
+extractCLI = (zipFile, callback) ->
+  log.debug 'Extracting wakatime-cli.zip file...'
+  statusBarIcon?.setStatus('extracting wakatime-cli...')
+  removeCLI(->
+    unzip(zipFile, resourcesFolder(), callback)
+  )
+
+removeCLI = (callback) ->
+  if fs.existsSync(path.join(resourcesFolder(), 'wakatime-cli'))
+    try
+      rimraf(path.join(resourcesFolder(), 'wakatime-cli'), ->
+        if callback?
+          callback()
+      )
+    catch e
+      log.warn e
+      if callback?
+        callback()
+  else
     if callback?
       callback()
-  )
+
+unzip = (file, outputDir, callback) ->
+  if fs.existsSync(file)
+    try
+      zip = new AdmZip(file)
+      zip.extractAllTo(outputDir, true)
+    catch e
+      log.warn e
+    finally
+      fs.unlink(file, (err) ->
+        if err?
+          log.warn err
+        if callback?
+          callback()
+      )
 
 architecture = () ->
   return '32' if os.arch().indexOf('32') > -1
