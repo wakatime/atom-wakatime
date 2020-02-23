@@ -3,6 +3,12 @@ History
 -------
 
 
+8.0.6 (2020-02-22)
+++++++++++++++++++
+
+- Fix detecting wakatime-cli install filename.
+
+
 8.0.5 (2020-02-22)
 ++++++++++++++++++
 
