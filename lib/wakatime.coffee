@@ -195,7 +195,7 @@ saveApiKey = (apiKey) ->
         statusBarIcon?.setTitle(msg)
 
 getUserHome = ->
-  process.env[if os.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
+  process.env[if process.platform == 'win32' then 'USERPROFILE' else 'HOME'] || ''
 
 loadDependencies = ->
   fs = require 'fs'
@@ -308,11 +308,11 @@ cliLocation = () ->
 installCLI = (callback) ->
   log.debug 'Downloading wakatime-cli...'
   statusBarIcon?.setStatus('downloading wakatime-cli...')
-  ext = if os.platform == 'win32' then '.exe' else ''
+  ext = if process.platform == 'win32' then '.exe' else ''
   url = s3BucketUrl() + 'wakatime' + ext
   localFile = __dirname + path.sep + 'wakatime-cli' + ext
   downloadFile(url, localFile, () ->
-    if os.platform != 'win32'
+    if process.platform != 'win32'
       fs.chmodSync(localFile, 0o755)
     if callback?
       callback()
@@ -324,7 +324,7 @@ architecture = () ->
 
 s3BucketUrl = () ->
   prefix = 'https://wakatime-cli.s3-us-west-2.amazonaws.com/'
-  p = os.platform()
+  p = process.platform()
   return prefix + 'mac-x86-64/' if p == 'darwin'
   return prefix + 'windows-x86-' + architecture() + '/' if p == 'win32'
   return prefix + 'linux-x86-64/'
