@@ -3,6 +3,13 @@ History
 -------
 
 
+8.0.3 (2020-02-22)
+++++++++++++++++++
+
+- Prevent sending heartbeats before wakatime-cli has finished downloading.
+  `#96 <https://github.com/wakatime/atom-wakatime/issues/96>`_
+
+
 8.0.2 (2020-02-22)
 ++++++++++++++++++
 
