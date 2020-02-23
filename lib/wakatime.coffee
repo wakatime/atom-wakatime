@@ -258,7 +258,8 @@ setupEventHandlers = (callback) ->
       callback()
 
 isCLIInstalled = () ->
-  return fs.existsSync(cliLocation())
+  ext = if process.platform == 'win32' then '.exe' else ''
+  return fs.existsSync(cliLocation() + ext)
 
 isCLILatest = (callback) ->
   args = ['--version']
