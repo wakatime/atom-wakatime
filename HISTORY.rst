@@ -3,6 +3,13 @@ History
 -------
 
 
+8.0.4 (2020-02-22)
+++++++++++++++++++
+
+- Use process.platform instead of os.platform to detect operating system.
+  `#96 <https://github.com/wakatime/atom-wakatime/issues/96>`_
+
+
 8.0.3 (2020-02-22)
 ++++++++++++++++++
 
