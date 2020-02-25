@@ -3,6 +3,13 @@ History
 -------
 
 
+9.0.1 (2020-02-25)
+++++++++++++++++++
+
+- Respect $WAKATIME_HOME environment variable for config file location.
+  `#94 <https://github.com/wakatime/atom-wakatime/issues/94>`_
+
+
 9.0.0 (2020-02-23)
 ++++++++++++++++++
 
