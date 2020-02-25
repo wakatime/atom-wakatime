@@ -415,7 +415,7 @@ sendHeartbeat = (file, lineno, isWrite) ->
 
     # fix for wakatime/atom-wakatime#65
     args.push('--config')
-    args.push(path.join getUserHome(), '.wakatime.cfg')
+    args.push(path.join getWakatimeHome(), '.wakatime.cfg')
 
     if atom.project.contains(currentFile)
       for rootDir in atom.project.rootDirectories
