@@ -3,6 +3,13 @@ History
 -------
 
 
+9.0.2 (2020-02-25)
+++++++++++++++++++
+
+- Bugfix for getUserHome is not defined error.
+  `#98 <https://github.com/wakatime/atom-wakatime/issues/98>`_
+
+
 9.0.1 (2020-02-25)
 ++++++++++++++++++
 
