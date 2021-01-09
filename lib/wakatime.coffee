@@ -268,7 +268,7 @@ isCLILatest = (callback) ->
   args = ['--version']
   child_process.execFile(cliLocation(), args, (error, stdout, stderr) ->
     if not error?
-      currentVersion = stdout.trim()
+      currentVersion = stdout.trim() + stderr.trim()
       log.debug 'Current wakatime-cli version is ' + currentVersion
       log.debug 'Checking for updates to wakatime-cli...'
       getLatestCliVersion((latestVersion) ->
