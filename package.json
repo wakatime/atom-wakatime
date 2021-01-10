@@ -76,6 +76,9 @@
     "request": "2.88.2",
     "rimraf": "2.6.2"
   },
+  "activationHooks": [
+    "core:loaded-shell-environment"
+  ],
   "engines": {
     "atom": ">0.50.0"
   },
