@@ -3,6 +3,13 @@ History
 -------
 
 
+9.0.3 (2021-01-10)
+++++++++++++++++++
+
+- Bugfix for Python version checking needs reading both stderr and stdout.
+  `#101 <https://github.com/wakatime/atom-wakatime/issues/101>`_
+
+
 9.0.2 (2020-02-25)
 ++++++++++++++++++
 
