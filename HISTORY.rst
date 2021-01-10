@@ -3,7 +3,7 @@ History
 -------
 
 
-9.0.3 (2021-01-10)
+9.0.4 (2021-01-10)
 ++++++++++++++++++
 
 - Bugfix for Python version checking needs reading both stderr and stdout.
