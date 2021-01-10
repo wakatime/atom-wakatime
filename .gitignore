@@ -1,5 +1,8 @@
 .DS_Store
 npm-debug.log
 node_modules
+package-lock.json
 *.msi
 wakatime-master
+wakatime-cli
+wakatime-cli.zip
