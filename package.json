@@ -74,6 +74,7 @@
     "decompress": "^4.2.1",
     "del": "^6.0.0",
     "ini": "^2.0.0",
+    "path-exists": "^4.0.0",
     "request": "2.88.2"
   },
   "devDependencies": {
