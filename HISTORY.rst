@@ -3,6 +3,15 @@ History
 -------
 
 
+10.0.0 (2021-01-11)
+++++++++++++++++++
+
+- Decaffeinate CoffeeScript into JavaScript.
+  `#104 <https://github.com/wakatime/atom-wakatime/issues/104>`_
+- Download wakatime-cli async to prevent blocking main thread.
+  `#103 <https://github.com/wakatime/atom-wakatime/issues/103>`_
+
+
 9.0.4 (2021-01-10)
 ++++++++++++++++++
 
