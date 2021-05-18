@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.1 (2021-05-18)
+++++++++++++++++++
+
+- GitHub ETag is not reliable, use Last-Modified-Since timestamp instead.
+
+
 11.0.0 (2021-05-18)
 ++++++++++++++++++
 
