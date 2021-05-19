@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.2 (2021-05-18)
+++++++++++++++++++
+
+- Use plugin name in GitHub API User-Agent header, now that ETag not used.
+
+
 11.0.1 (2021-05-18)
 ++++++++++++++++++
 
