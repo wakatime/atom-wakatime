@@ -3,6 +3,13 @@ History
 -------
 
 
+11.0.3 (2021-05-20)
+++++++++++++++++++
+
+- Prevent deleting wakatime resources folder when downloading new wakatime-cli.
+  `#106 <https://github.com/wakatime/atom-wakatime/issues/106>`_
+
+
 11.0.2 (2021-05-18)
 ++++++++++++++++++
 
