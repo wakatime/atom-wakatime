@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.4 (2021-05-20)
+++++++++++++++++++
+
+- Fix caching GitHub releases API requests with correct cfg key name.
+
+
 11.0.3 (2021-05-20)
 ++++++++++++++++++
 
