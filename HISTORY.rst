@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.5 (2021-08-14)
+++++++++++++++++++
+
+- Add optional chaining operator to http response.
+
+
 11.0.4 (2021-05-20)
 ++++++++++++++++++
 
