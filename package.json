@@ -1,7 +1,7 @@
 {
   "name": "wakatime",
   "description": "The developer dashboard. Automatic time tracking and metrics for programmers.",
-  "version": "11.0.4",
+  "version": "11.0.5",
   "author": "WakaTime <support@wakatime.com>",
   "keywords": [
     "productivity",
