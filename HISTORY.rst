@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.7 (2021-11-02)
+++++++++++++++++++
+
+- Fix reporting missing wakatime-cli platform support.
+
+
 11.0.6 (2021-10-31)
 ++++++++++++++++++
 
@@ -619,4 +625,3 @@ History
 ++++++++++++++++++
 
 - Birth
-
