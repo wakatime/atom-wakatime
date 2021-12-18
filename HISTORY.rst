@@ -3,6 +3,13 @@ History
 -------
 
 
+11.0.8 (2021-12-18)
+++++++++++++++++++
+
+- Remove null chars when reading and writing ini cfg file.
+  `jetbrains-wakatime#195 <https://github.com/wakatime/jetbrains-wakatime/issues/195>`_
+
+
 11.0.7 (2021-12-17)
 ++++++++++++++++++
 
