@@ -3,22 +3,17 @@ History
 -------
 
 
-11.0.8 (2021-12-17)
+11.0.7 (2021-12-17)
 ++++++++++++++++++
 
 - Prevent using undefined response in logging.
   `#119 <https://github.com/wakatime/atom-wakatime/issues/119>`_
 
 
-11.0.7 (2021-11-02)
+11.0.6 (2021-11-02)
 ++++++++++++++++++
 
 - Fix reporting missing wakatime-cli platform support.
-
-
-11.0.6 (2021-10-31)
-++++++++++++++++++
-
 - Add platform support for Windows arm64.
 
 
