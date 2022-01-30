@@ -3,6 +3,12 @@ History
 -------
 
 
+11.0.9 (2022-01-30)
+++++++++++++++++++
+
+- Use separate config file for internal settings.
+
+
 11.0.8 (2021-12-18)
 ++++++++++++++++++
 
