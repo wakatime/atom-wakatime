@@ -3,6 +3,13 @@ History
 -------
 
 
+11.0.10 (2022-03-14)
+++++++++++++++++++
+
+- Fix bug where wrong variable name used when creating resources folder.
+  `#121 <https://github.com/wakatime/atom-wakatime/issues/121>`_
+
+
 11.0.9 (2022-01-30)
 ++++++++++++++++++
 
