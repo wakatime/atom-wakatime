@@ -50,7 +50,7 @@
     },
     "debug": {
       "title": "Debug",
-      "description": "Logs verbose debug messages to the Atom developer console and ~/.wakatime.log file.",
+      "description": "Logs verbose debug messages to the Atom developer console and ~/.wakatime/wakatime.log file.",
       "type": "boolean",
       "default": false,
       "order": 4
